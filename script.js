@@ -45,7 +45,7 @@ var legend = L.control({position: 'bottomright'});
 legend.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'legend');
     div.innerHTML = '<h4>Légende</h4>';
-    div.innerHTML += '<div class="legend-item"><span class="legend-color" style="background-color: #87CEEB;"></span> Gouvernement</div>';
+    div.innerHTML += '<div class="legend-item"><span class="legend-color" style="background-color: #80e0ff;"></span> Symboles Gouvernementaux</div>';
     return div;
 };
 
