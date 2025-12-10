@@ -57,109 +57,116 @@ var regionStyle = {
     fillColor: '#0f0'
 };
 
-// Région 39 - Basse-Égypte / Delta du Nil (au nord, petit triangle)
+// Région 39 - Basse-Égypte / Delta du Nil (petit triangle au nord entre mer et Caire)
 var region39 = L.polygon([
-    [31.45, 31.35],  // Damiette (Nord-Est)
-    [31.50, 29.95],  // Alexandrie (Nord-Ouest)
-    [30.85, 30.15],  // Tanta (Centre)
-    [30.05, 31.25],  // Le Caire (Sud-Est)
-    [30.00, 30.85]   // Gizeh (Sud-Ouest)
+    [31.50, 30.40],  // Nord-Ouest (Alexandrie côte)
+    [31.40, 32.30],  // Nord-Est (Port-Saïd)
+    [30.95, 31.65],  // Est
+    [30.05, 31.30],  // Sud-Est (Le Caire)
+    [30.40, 30.40]   // Sud-Ouest
 ], regionStyle).addTo(map);
 region39.bindPopup("<b>Région 39</b><br>Basse-Égypte / Delta du Nil");
 
-// Région 38 - À l'ouest de la région 39 (petite zone ouest du delta)
+// Région 38 - Petite région à l'ouest du Delta (côte ouest)
 var region38 = L.polygon([
-    [31.50, 29.95],  // Nord (côte)
-    [31.20, 28.80],  // Ouest
-    [30.50, 29.00],  // Sud-Ouest
-    [30.00, 30.85],  // Sud-Est (frontière avec 39)
-    [30.85, 30.15]   // Est
+    [31.65, 29.30],  // Nord (côte méditerranée)
+    [31.50, 30.40],  // Est (frontière avec 39)
+    [30.40, 30.40],  // Sud-Est
+    [30.45, 29.20]   // Sud-Ouest
 ], regionStyle).addTo(map);
-region38.bindPopup("<b>Région 38</b><br>Gouvernorat de Béheira");
+region38.bindPopup("<b>Région 38</b><br>Béheira");
 
-// Région 37 - Grande zone centrale (Moyenne-Égypte, de Gizeh à Assiout)
+// Région 42 - El Fayoum (petite zone au sud-ouest du Caire)
+var region42 = L.polygon([
+    [29.50, 30.65],  // Nord
+    [30.05, 31.30],  // Nord-Est (Le Caire)
+    [29.50, 31.05],  // Est
+    [29.15, 30.75]   // Sud
+], regionStyle).addTo(map);
+region42.bindPopup("<b>Région 42</b><br>El Fayoum");
+
+// Région 37 - Moyenne-Égypte (grande région centrale le long du Nil)
 var region37 = L.polygon([
-    [30.05, 31.25],  // Nord-Est (Le Caire)
-    [30.00, 30.85],  // Nord-Ouest (Gizeh)
-    [30.50, 29.00],  // Ouest
-    [28.50, 29.50],  // Sud-Ouest
-    [27.20, 31.10],  // Sud-Est (Assiout)
-    [29.85, 31.35]   // Est (Beni Suef)
+    [30.40, 30.40],  // Nord-Ouest
+    [30.05, 31.30],  // Nord-Est (Le Caire)
+    [29.50, 30.65],  // Centre (Fayoum nord)
+    [29.15, 30.75],  // Sud-Ouest (Fayoum sud)
+    [27.35, 30.95],  // Sud-Centre
+    [27.15, 30.55],  // Sud
+    [29.10, 29.45],  // Ouest milieu
+    [30.45, 29.20]   // Nord-Ouest
 ], regionStyle).addTo(map);
 region37.bindPopup("<b>Région 37</b><br>Moyenne-Égypte");
 
-// Région 36 - Haute-Égypte (de Sohag à Assouan, grande zone sud centrale)
-var region36 = L.polygon([
-    [27.20, 31.10],  // Nord (Assiout)
-    [28.50, 29.50],  // Nord-Ouest
-    [26.00, 29.80],  // Ouest
-    [24.10, 32.30],  // Sud (Assouan)
-    [26.20, 32.70]   // Sud-Est (Louxor)
-], regionStyle).addTo(map);
-region36.bindPopup("<b>Région 36</b><br>Haute-Égypte");
-
-// Région 42 - Centre-Ouest (petite zone entre 37 et 39, au sud immédiat du Caire)
-var region42 = L.polygon([
-    [30.05, 31.25],  // Nord (Le Caire)
-    [29.85, 31.35],  // Est
-    [29.50, 31.80],  // Sud-Est
-    [29.00, 31.50],  // Sud
-    [29.20, 30.95]   // Ouest
-], regionStyle).addTo(map);
-region42.bindPopup("<b>Région 42</b><br>Gouvernorat du Fayoum");
-
-// Région 35 - Désert Oriental (longue bande est, le long de la Mer Rouge nord)
+// Région 35 - Désert Oriental (entre le Nil et la Mer Rouge, bande centrale)
 var region35 = L.polygon([
-    [30.05, 31.25],  // Nord-Ouest (Le Caire)
-    [31.45, 31.35],  // Nord (Damiette)
-    [30.60, 32.35],  // Nord-Est (Ismaïlia)
-    [29.50, 32.55],  // Suez
-    [27.50, 33.25],  // Centre-Est
-    [26.20, 32.70],  // Sud (Louxor)
-    [27.20, 31.10],  // Sud-Ouest (Assiout)
-    [29.85, 31.35]   // Ouest
+    [30.05, 31.30],  // Nord-Ouest (Le Caire)
+    [30.95, 31.65],  // Nord
+    [29.95, 32.55],  // Nord-Est (Suez)
+    [28.55, 33.30],  // Est milieu
+    [26.85, 33.20],  // Sud-Est
+    [26.20, 32.75],  // Sud (Louxor)
+    [27.15, 30.55],  // Sud-Ouest
+    [27.35, 30.95],  // Ouest
+    [29.15, 30.75],  // Nord-Ouest (Fayoum)
+    [29.50, 31.05]   // Nord-Ouest bis
 ], regionStyle).addTo(map);
 region35.bindPopup("<b>Région 35</b><br>Désert Oriental");
 
-// Région 41 - Nord Sinaï (au nord de la péninsule du Sinaï)
+// Région 40 - Suez (petite zone du canal de Suez, entre 39, 35 et 41)
+var region40 = L.polygon([
+    [30.95, 31.65],  // Ouest
+    [31.40, 32.30],  // Nord-Ouest (Port-Saïd)
+    [30.90, 32.35],  // Nord (Ismaïlia)
+    [29.95, 32.55]   // Sud (Suez ville)
+], regionStyle).addTo(map);
+region40.bindPopup("<b>Région 40</b><br>Suez");
+
+// Région 41 - Nord Sinaï (triangle nord de la péninsule du Sinaï)
 var region41 = L.polygon([
-    [31.30, 32.20],  // Ouest (Port-Saïd)
-    [31.10, 34.25],  // Est (frontière)
-    [30.85, 34.20],  // Sud-Est
-    [30.60, 32.35]   // Sud-Ouest (Ismaïlia)
+    [31.40, 32.30],  // Ouest (Port-Saïd)
+    [31.10, 34.20],  // Nord-Est (frontière Gaza)
+    [30.85, 34.05],  // Est
+    [30.90, 32.35]   // Sud-Ouest (Ismaïlia)
 ], regionStyle).addTo(map);
 region41.bindPopup("<b>Région 41</b><br>Nord Sinaï");
 
-// Région 40 - Suez (petite zone autour du canal de Suez)
-var region40 = L.polygon([
-    [30.60, 32.35],  // Nord (Ismaïlia)
-    [31.30, 32.20],  // Nord-Ouest (Port-Saïd)
-    [31.45, 31.35],  // Ouest (côte)
-    [30.05, 31.25],  // Sud-Ouest (Le Caire)
-    [29.50, 32.55]   // Sud (Suez)
-], regionStyle).addTo(map);
-region40.bindPopup("<b>Région 40</b><br>Gouvernorat de Suez");
-
-// Région 43 - Sud Sinaï (pointe sud de la péninsule)
+// Région 43 - Sud Sinaï (grande partie sud de la péninsule)
 var region43 = L.polygon([
-    [30.60, 32.35],  // Nord-Ouest (Ismaïlia)
-    [30.85, 34.20],  // Nord-Est
-    [29.50, 34.95],  // Est (Sharm el-Sheikh)
-    [28.20, 34.50],  // Sud-Est (pointe)
-    [28.00, 33.80],  // Sud
-    [29.50, 32.55]   // Ouest (Suez)
+    [30.90, 32.35],  // Nord-Ouest (Ismaïlia)
+    [30.85, 34.05],  // Nord
+    [29.55, 34.90],  // Nord-Est (Taba)
+    [28.05, 34.55],  // Est (Sharm)
+    [27.95, 33.85],  // Sud-Est (pointe)
+    [28.55, 33.30],  // Sud-Ouest
+    [29.95, 32.55]   // Ouest (Suez)
 ], regionStyle).addTo(map);
 region43.bindPopup("<b>Région 43</b><br>Sud Sinaï");
 
-// Région 44 - Mer Rouge (longue bande côtière est, au sud)
+// Région 36 - Haute-Égypte (grande zone sud le long du Nil)
+var region36 = L.polygon([
+    [27.15, 30.55],  // Nord
+    [26.20, 32.75],  // Nord-Est (Louxor)
+    [25.75, 32.65],  // Est (Louxor centre)
+    [24.10, 32.90],  // Sud-Est (Assouan)
+    [24.05, 32.35],  // Sud (Assouan sud)
+    [25.55, 31.55],  // Sud-Ouest
+    [26.55, 30.25]   // Ouest
+], regionStyle).addTo(map);
+region36.bindPopup("<b>Région 36</b><br>Haute-Égypte");
+
+// Région 44 - Mer Rouge (longue bande côtière le long de la Mer Rouge)
 var region44 = L.polygon([
-    [27.50, 33.25],  // Nord
-    [28.00, 33.80],  // Nord-Est
-    [28.20, 34.50],  // Est (pointe Sinaï)
-    [26.00, 34.85],  // Sud-Est (Marsa Alam)
-    [24.70, 35.00],  // Sud (frontière soudanaise)
-    [24.10, 32.30],  // Sud-Ouest (Assouan)
-    [26.20, 32.70]   // Ouest (Louxor)
+    [26.85, 33.20],  // Nord
+    [28.55, 33.30],  // Nord-Est
+    [27.95, 33.85],  // Est
+    [28.05, 34.55],  // Est loin (Sharm)
+    [25.55, 35.25],  // Sud-Est (Marsa Alam)
+    [24.75, 35.05],  // Sud (frontière Soudan)
+    [24.05, 32.35],  // Sud-Ouest (Assouan)
+    [24.10, 32.90],  // Ouest
+    [25.75, 32.65],  // Ouest milieu
+    [26.20, 32.75]   // Ouest nord
 ], regionStyle).addTo(map);
 region44.bindPopup("<b>Région 44</b><br>Mer Rouge");
 
