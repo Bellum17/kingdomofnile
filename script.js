@@ -29,9 +29,9 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Icône de gouvernement (GOV)
 var govIcon = L.icon({
     iconUrl: 'images/icon_gov_rdn.png',
-    iconSize: [40, 40],        // Taille de l'icône
-    iconAnchor: [20, 40],      // Point d'ancrage (centré en bas)
-    popupAnchor: [0, -40]      // Position de la popup
+    iconSize: [60, 50],        // Taille de l'icône (largeur x hauteur) - format rectangulaire
+    iconAnchor: [30, 50],      // Point d'ancrage (centré en bas)
+    popupAnchor: [0, -50]      // Position de la popup
 });
 
 // Placement au Caire
