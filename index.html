@@ -44,6 +44,51 @@
                 <input type="checkbox" id="filterGouvernement" checked>
                 <span>Symboles Gouvernementaux</span>
             </label>
+            
+            <h3>Placer des unités militaires</h3>
+            <div class="military-units">
+                <button class="unit-btn" data-unit="infantry" title="Infanterie">
+                    <span class="unit-symbol">⬛</span>
+                    <span class="unit-label">Infanterie</span>
+                </button>
+                <button class="unit-btn" data-unit="armor" title="Blindés">
+                    <span class="unit-symbol">⬜</span>
+                    <span class="unit-label">Blindés</span>
+                </button>
+                <button class="unit-btn" data-unit="artillery" title="Artillerie">
+                    <span class="unit-symbol">●</span>
+                    <span class="unit-label">Artillerie</span>
+                </button>
+                <button class="unit-btn" data-unit="recon" title="Reconnaissance">
+                    <span class="unit-symbol">◆</span>
+                    <span class="unit-label">Reconnaissance</span>
+                </button>
+                <button class="unit-btn" data-unit="aviation" title="Aviation">
+                    <span class="unit-symbol">✈</span>
+                    <span class="unit-label">Aviation</span>
+                </button>
+                <button class="unit-btn" data-unit="logistics" title="Logistique">
+                    <span class="unit-symbol">▲</span>
+                    <span class="unit-label">Logistique</span>
+                </button>
+                <button class="unit-btn" data-unit="command" title="Commandement">
+                    <span class="unit-symbol">★</span>
+                    <span class="unit-label">Commandement</span>
+                </button>
+                <button class="unit-btn" data-unit="navy" title="Marine">
+                    <span class="unit-symbol">⚓</span>
+                    <span class="unit-label">Marine</span>
+                </button>
+            </div>
+            
+            <div class="unit-controls">
+                <button id="clearUnits" class="control-btn">Effacer toutes les unités</button>
+                <button id="cancelPlacement" class="control-btn cancel-btn">Annuler placement</button>
+            </div>
+            
+            <div class="placement-info">
+                <p id="placementStatus">Sélectionnez une unité puis cliquez sur la carte</p>
+            </div>
         </div>
     </div>
 
