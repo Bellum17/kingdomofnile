@@ -1,3 +1,6 @@
+// --- DEBUG: Vérification du chargement du script ---
+console.log('✅ script.js chargé !');
+
 // --- 1. Initialisation de la carte ---
 // Carte centrée sur la région 39 (Nord de l'Égypte - Delta du Nil)
 // Définition des limites pour toute l'Égypte
@@ -80,6 +83,7 @@ filterGouvernement.addEventListener('change', function() {
 
 
 // --- 6. Système de placement d'unités militaires ---
+console.log('🎖️ Chargement du système d\'unités militaires...');
 let militaryUnits = L.layerGroup().addTo(map);
 let selectedUnit = null;
 let isPlacementMode = false;
@@ -99,6 +103,9 @@ const unitConfig = {
 // Sélection d'une unité
 const unitButtons = document.querySelectorAll('.unit-btn');
 const placementStatus = document.getElementById('placementStatus');
+
+console.log(`📋 Boutons d'unités trouvés: ${unitButtons.length}`);
+console.log(`📊 Status de placement trouvé: ${placementStatus ? 'OUI' : 'NON'}`);
 
 unitButtons.forEach(btn => {
     btn.addEventListener('click', function() {
