@@ -66,18 +66,22 @@ const filterGouvernement = document.getElementById('filterGouvernement');
 const filterArmees = document.getElementById('filterArmees');
 
 // Toggle du menu burger
-burgerBtn.addEventListener('click', function() {
-    menuContent.classList.toggle('menu-hidden');
-});
+if (burgerBtn && menuContent) {
+    burgerBtn.addEventListener('click', function() {
+        menuContent.classList.toggle('menu-hidden');
+    });
+}
 
 // Filtre pour les symboles gouvernementaux
-filterGouvernement.addEventListener('change', function() {
-    if (this.checked) {
-        gouvernementLayer.addTo(map);
-    } else {
-        map.removeLayer(gouvernementLayer);
-    }
-});
+if (filterGouvernement) {
+    filterGouvernement.addEventListener('change', function() {
+        if (this.checked) {
+            gouvernementLayer.addTo(map);
+        } else {
+            map.removeLayer(gouvernementLayer);
+        }
+    });
+}
 
 
 // --- 6. Système de placement d'unités militaires ---
@@ -195,19 +199,24 @@ window.removeUnit = function(index) {
 };
 
 // Effacer toutes les unités
-document.getElementById('clearUnits').addEventListener('click', function() {
-    if (confirm('Voulez-vous vraiment effacer toutes les unités ?')) {
-        armyLayer.clearLayers();
-        placedUnits = [];
-        console.log('Toutes les unités ont été effacées');
-    }
-});
+const clearUnitsBtn = document.getElementById('clearUnits');
+if (clearUnitsBtn) {
+    clearUnitsBtn.addEventListener('click', function() {
+        if (confirm('Voulez-vous vraiment effacer toutes les unités ?')) {
+            armyLayer.clearLayers();
+            placedUnits = [];
+            console.log('Toutes les unités ont été effacées');
+        }
+    });
+}
 
 // Filtre pour les unités militaires
-filterArmees.addEventListener('change', function() {
-    if (this.checked) {
-        armyLayer.addTo(map);
-    } else {
-        map.removeLayer(armyLayer);
-    }
-});
+if (filterArmees) {
+    filterArmees.addEventListener('change', function() {
+        if (this.checked) {
+            armyLayer.addTo(map);
+        } else {
+            map.removeLayer(armyLayer);
+        }
+    });
+}
