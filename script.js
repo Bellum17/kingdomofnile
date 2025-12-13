@@ -5,17 +5,18 @@ var s        // Create custom icon (NATO style)
         const unitIcon = L.divIcon({
             className: 'military-unit-marker',
             html: `<div style="
-                background: rgba(0, 0, 0, 0.9);
+                background: rgba(0, 0, 0, 0.8);
                 border: 3px solid #00ff00;
-                width: 45px;
-                height: 45px;
+                width: 50px;
+                height: 50px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 box-shadow: 0 0 20px rgba(0, 255, 0, 0.7);
+                position: relative;
             ">${symbolIcon}</div>`,
-            iconSize: [45, 45],
-            iconAnchor: [22, 22]
+            iconSize: [50, 50],
+            iconAnchor: [25, 25]
         });g(22.0, 25.0);  // Coin sud-ouest (frontière soudanaise)
 var northEast = L.latLng(31.8, 35.0);  // Coin nord-est (Sinaï)
 var bounds = L.latLngBounds(southWest, northEast);
@@ -151,18 +152,49 @@ function getSymbolName(type) {
     return names[type] || type;
 }
 
-// Obtenir l'icône du symbole
+// Get symbol icon (NATO style)
 function getSymbolIcon(type) {
     const icons = {
-        'infantry': '🪖',
-        'armor': '🛡️',
-        'artillery': '💣',
-        'airforce': '✈️',
-        'navy': '⚓',
-        'special': '⭐',
-        'hq': '🏛️',
-        'logistics': '📦',
-        'medical': '⚕️'
+        'infantry': `<svg width="30" height="30" viewBox="0 0 30 30">
+            <rect x="5" y="5" width="20" height="20" fill="none" stroke="#00ff00" stroke-width="2"/>
+            <line x1="10" y1="15" x2="20" y2="15" stroke="#00ff00" stroke-width="2"/>
+        </svg>`,
+        'armor': `<svg width="30" height="30" viewBox="0 0 30 30">
+            <circle cx="15" cy="15" r="10" fill="none" stroke="#00ff00" stroke-width="2"/>
+            <circle cx="15" cy="15" r="3" fill="#00ff00"/>
+        </svg>`,
+        'artillery': `<svg width="30" height="30" viewBox="0 0 30 30">
+            <circle cx="15" cy="15" r="10" fill="none" stroke="#00ff00" stroke-width="2"/>
+            <circle cx="15" cy="10" r="2" fill="#00ff00"/>
+            <circle cx="10" cy="18" r="2" fill="#00ff00"/>
+            <circle cx="20" cy="18" r="2" fill="#00ff00"/>
+        </svg>`,
+        'airforce': `<svg width="30" height="30" viewBox="0 0 30 30">
+            <path d="M15,8 L10,20 L15,18 L20,20 Z" fill="none" stroke="#00ff00" stroke-width="2"/>
+            <line x1="8" y1="14" x2="22" y2="14" stroke="#00ff00" stroke-width="2"/>
+        </svg>`,
+        'navy': `<svg width="30" height="30" viewBox="0 0 30 30">
+            <path d="M8,18 L15,10 L22,18" fill="none" stroke="#00ff00" stroke-width="2"/>
+            <line x1="8" y1="18" x2="22" y2="18" stroke="#00ff00" stroke-width="2"/>
+        </svg>`,
+        'special': `<svg width="30" height="30" viewBox="0 0 30 30">
+            <polygon points="15,5 18,12 25,12 20,17 22,24 15,19 8,24 10,17 5,12 12,12" fill="none" stroke="#00ff00" stroke-width="2"/>
+        </svg>`,
+        'hq': `<svg width="30" height="30" viewBox="0 0 30 30">
+            <rect x="8" y="8" width="14" height="14" fill="none" stroke="#00ff00" stroke-width="2"/>
+            <line x1="8" y1="15" x2="22" y2="15" stroke="#00ff00" stroke-width="2"/>
+            <line x1="15" y1="8" x2="15" y2="22" stroke="#00ff00" stroke-width="2"/>
+        </svg>`,
+        'logistics': `<svg width="30" height="30" viewBox="0 0 30 30">
+            <rect x="8" y="10" width="14" height="10" fill="none" stroke="#00ff00" stroke-width="2"/>
+            <line x1="12" y1="10" x2="12" y2="20" stroke="#00ff00" stroke-width="2"/>
+            <line x1="18" y1="10" x2="18" y2="20" stroke="#00ff00" stroke-width="2"/>
+        </svg>`,
+        'medical': `<svg width="30" height="30" viewBox="0 0 30 30">
+            <circle cx="15" cy="15" r="10" fill="none" stroke="#00ff00" stroke-width="2"/>
+            <line x1="15" y1="10" x2="15" y2="20" stroke="#00ff00" stroke-width="2"/>
+            <line x1="10" y1="15" x2="20" y2="15" stroke="#00ff00" stroke-width="2"/>
+        </svg>`
     };
     return icons[type] || '📍';
 }
