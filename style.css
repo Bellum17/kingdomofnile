@@ -168,106 +168,91 @@ main {
     color: #0ff;
 }
 
-/* Unités militaires */
-.military-units {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin: 15px 0;
+.filter-section {
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+    padding-bottom: 15px;
 }
 
-.unit-btn {
-    background-color: #000;
-    border: 2px solid #0f0;
-    color: #0f0;
-    padding: 15px 10px;
+.filter-section:last-child {
+    border-bottom: none;
+}
+
+.filter-section h4 {
+    color: #00ff00;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Military symbols grid */
+.military-symbols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.symbol-btn {
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 10px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    font-size: 20px;
+    transition: all 0.3s;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    font-family: 'Courier New', Courier, monospace;
+    gap: 5px;
 }
 
-.unit-btn:hover {
-    background-color: #0f0;
-    color: #000;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+.symbol-btn:hover {
+    background: rgba(0, 255, 0, 0.3);
     transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
 }
 
-.unit-btn.active {
-    background-color: #0f0;
-    color: #000;
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.7);
-    animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.7); }
-    50% { box-shadow: 0 0 30px rgba(0, 255, 0, 1); }
-}
-
-.unit-symbol {
-    font-size: 24px;
+.symbol-btn.active {
+    background: #00ff00;
+    color: black;
     font-weight: bold;
 }
 
-.unit-label {
-    font-size: 11px;
-    text-transform: uppercase;
+.symbol-btn span {
+    font-size: 10px;
 }
 
-/* Contrôles des unités */
-.unit-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin: 15px 0;
-}
-
-.control-btn {
-    background-color: #000;
-    border: 2px solid #0f0;
-    color: #0f0;
+.placement-mode-info {
+    background: rgba(0, 255, 0, 0.2);
+    color: #00ff00;
     padding: 10px;
-    cursor: pointer;
-    font-family: 'Courier New', Courier, monospace;
-    text-transform: uppercase;
-    font-size: 12px;
-    transition: all 0.3s ease;
-}
-
-.control-btn:hover {
-    background-color: #0f0;
-    color: #000;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
-}
-
-.cancel-btn {
-    border-color: #f00;
-    color: #f00;
-}
-
-.cancel-btn:hover {
-    background-color: #f00;
-    color: #000;
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
-}
-
-/* Info de placement */
-.placement-info {
-    background-color: rgba(0, 255, 0, 0.1);
-    border: 1px solid #0f0;
-    padding: 10px;
-    margin-top: 15px;
-}
-
-.placement-info p {
-    margin: 0;
-    font-size: 11px;
-    color: #0f0;
+    border-radius: 5px;
+    margin-top: 10px;
     text-align: center;
-    font-style: italic;
+    font-size: 12px;
+    border: 1px solid #00ff00;
+}
+
+/* Custom scrollbar for burger menu */
+.burger-content {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.burger-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.burger-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.burger-content::-webkit-scrollbar-thumb {
+    background: #00ff00;
+    border-radius: 4px;
+}
+
+.burger-content::-webkit-scrollbar-thumb:hover {
+    background: #00cc00;
 }

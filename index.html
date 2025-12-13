@@ -36,58 +36,68 @@
     </header>
 
     <!-- Menu Burger -->
-    <div id="menuBurger">
-        <button id="burgerBtn">☰</button>
-        <div id="menuContent" class="menu-hidden">
-            <h3>Filtres de la carte</h3>
-            <label class="filter-option">
-                <input type="checkbox" id="filterGouvernement" checked>
-                <span>Symboles Gouvernementaux</span>
-            </label>
+    <div class="burger-menu">
+        <button class="burger-button" onclick="toggleBurgerMenu()">☰</button>
+        <div class="burger-content" id="burgerContent">
+            <h3>Menu de la carte</h3>
             
-            <h3>Placer des unités militaires</h3>
-            <div class="military-units">
-                <button class="unit-btn" data-unit="infantry" title="Infanterie">
-                    <span class="unit-symbol">⬛</span>
-                    <span class="unit-label">Infanterie</span>
-                </button>
-                <button class="unit-btn" data-unit="armor" title="Blindés">
-                    <span class="unit-symbol">⬜</span>
-                    <span class="unit-label">Blindés</span>
-                </button>
-                <button class="unit-btn" data-unit="artillery" title="Artillerie">
-                    <span class="unit-symbol">●</span>
-                    <span class="unit-label">Artillerie</span>
-                </button>
-                <button class="unit-btn" data-unit="recon" title="Reconnaissance">
-                    <span class="unit-symbol">◆</span>
-                    <span class="unit-label">Reconnaissance</span>
-                </button>
-                <button class="unit-btn" data-unit="aviation" title="Aviation">
-                    <span class="unit-symbol">✈</span>
-                    <span class="unit-label">Aviation</span>
-                </button>
-                <button class="unit-btn" data-unit="logistics" title="Logistique">
-                    <span class="unit-symbol">▲</span>
-                    <span class="unit-label">Logistique</span>
-                </button>
-                <button class="unit-btn" data-unit="command" title="Commandement">
-                    <span class="unit-symbol">★</span>
-                    <span class="unit-label">Commandement</span>
-                </button>
-                <button class="unit-btn" data-unit="navy" title="Marine">
-                    <span class="unit-symbol">⚓</span>
-                    <span class="unit-label">Marine</span>
-                </button>
+            <!-- Section Filtres -->
+            <div class="filter-section">
+                <h4>📍 Affichage</h4>
+                <label class="filter-option">
+                    <input type="checkbox" id="govFilter" checked onchange="toggleGovernmentSymbols()">
+                    Symboles Gouvernementaux
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" id="armyFilter" checked onchange="toggleArmySymbols()">
+                    Unités Militaires
+                </label>
             </div>
             
-            <div class="unit-controls">
-                <button id="clearUnits" class="control-btn">Effacer toutes les unités</button>
-                <button id="cancelPlacement" class="control-btn cancel-btn">Annuler placement</button>
-            </div>
-            
-            <div class="placement-info">
-                <p id="placementStatus">Sélectionnez une unité puis cliquez sur la carte</p>
+            <!-- Section Placement d'armées -->
+            <div class="filter-section">
+                <h4>⚔️ Placer des unités</h4>
+                <div class="military-symbols">
+                    <button class="symbol-btn" onclick="selectSymbol('infantry')" data-symbol="infantry">
+                        🪖
+                        <span>Infanterie</span>
+                    </button>
+                    <button class="symbol-btn" onclick="selectSymbol('armor')" data-symbol="armor">
+                        🛡️
+                        <span>Blindés</span>
+                    </button>
+                    <button class="symbol-btn" onclick="selectSymbol('artillery')" data-symbol="artillery">
+                        💣
+                        <span>Artillerie</span>
+                    </button>
+                    <button class="symbol-btn" onclick="selectSymbol('airforce')" data-symbol="airforce">
+                        ✈️
+                        <span>Aviation</span>
+                    </button>
+                    <button class="symbol-btn" onclick="selectSymbol('navy')" data-symbol="navy">
+                        ⚓
+                        <span>Marine</span>
+                    </button>
+                    <button class="symbol-btn" onclick="selectSymbol('special')" data-symbol="special">
+                        ⭐
+                        <span>Forces Sp.</span>
+                    </button>
+                    <button class="symbol-btn" onclick="selectSymbol('hq')" data-symbol="hq">
+                        🏛️
+                        <span>QG</span>
+                    </button>
+                    <button class="symbol-btn" onclick="selectSymbol('logistics')" data-symbol="logistics">
+                        📦
+                        <span>Logistique</span>
+                    </button>
+                    <button class="symbol-btn" onclick="selectSymbol('medical')" data-symbol="medical">
+                        ⚕️
+                        <span>Médical</span>
+                    </button>
+                </div>
+                <div class="placement-mode-info" id="placementInfo" style="display: none;">
+                    Cliquez sur la carte pour placer l'unité
+                </div>
             </div>
         </div>
     </div>

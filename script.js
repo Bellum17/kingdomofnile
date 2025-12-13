@@ -1,6 +1,3 @@
-// --- DEBUG: Vérification du chargement du script ---
-console.log('✅ script.js chargé !');
-
 // --- 1. Initialisation de la carte ---
 // Carte centrée sur la région 39 (Nord de l'Égypte - Delta du Nil)
 // Définition des limites pour toute l'Égypte
@@ -82,144 +79,147 @@ filterGouvernement.addEventListener('change', function() {
 });
 
 
-// --- 6. Système de placement d'unités militaires ---
-console.log('🎖️ Chargement du système d\'unités militaires...');
-let militaryUnits = L.layerGroup().addTo(map);
-let selectedUnit = null;
-let isPlacementMode = false;
+// --- 6. Unités Militaires ---
+// Groupe de calques pour les unités militaires
+const armyUnits = L.layerGroup().addTo(map);
+let selectedSymbol = null;
+let placementMode = false;
 
-// Configuration des symboles militaires
-const unitConfig = {
-    infantry: { symbol: '⬛', color: '#0f0', name: 'Infanterie' },
-    armor: { symbol: '⬜', color: '#0ff', name: 'Blindés' },
-    artillery: { symbol: '●', color: '#f90', name: 'Artillerie' },
-    recon: { symbol: '◆', color: '#ff0', name: 'Reconnaissance' },
-    aviation: { symbol: '✈', color: '#00f', name: 'Aviation' },
-    logistics: { symbol: '▲', color: '#f0f', name: 'Logistique' },
-    command: { symbol: '★', color: '#ff0', name: 'Commandement' },
-    navy: { symbol: '⚓', color: '#0af', name: 'Marine' }
-};
-
-// Sélection d'une unité
-const unitButtons = document.querySelectorAll('.unit-btn');
-const placementStatus = document.getElementById('placementStatus');
-
-console.log(`📋 Boutons d'unités trouvés: ${unitButtons.length}`);
-console.log(`📊 Status de placement trouvé: ${placementStatus ? 'OUI' : 'NON'}`);
-
-unitButtons.forEach(btn => {
-    btn.addEventListener('click', function() {
-        const unitType = this.getAttribute('data-unit');
-        
-        // Retirer la classe active de tous les boutons
-        unitButtons.forEach(b => b.classList.remove('active'));
-        
-        if (selectedUnit === unitType && isPlacementMode) {
-            // Désélectionner si on clique deux fois
-            selectedUnit = null;
-            isPlacementMode = false;
-            placementStatus.textContent = 'Sélectionnez une unité puis cliquez sur la carte';
-            map.getContainer().style.cursor = '';
-        } else {
-            // Sélectionner une nouvelle unité
-            selectedUnit = unitType;
-            isPlacementMode = true;
-            this.classList.add('active');
-            placementStatus.textContent = `Mode placement: ${unitConfig[unitType].name} - Cliquez sur la carte`;
-            map.getContainer().style.cursor = 'crosshair';
-        }
-    });
-});
-
-// Placement sur la carte
-map.on('click', function(e) {
-    if (isPlacementMode && selectedUnit) {
-        placeUnit(e.latlng, selectedUnit);
+// Toggle des symboles militaires
+function toggleArmySymbols() {
+    const armyFilter = document.getElementById('armyFilter');
+    if (armyFilter.checked) {
+        map.addLayer(armyUnits);
+    } else {
+        map.removeLayer(armyUnits);
     }
-});
-
-// Fonction pour placer une unité
-function placeUnit(latlng, unitType) {
-    const config = unitConfig[unitType];
-    
-    // Créer une icône HTML personnalisée
-    const unitIcon = L.divIcon({
-        className: 'military-unit-marker',
-        html: `<div style="
-            background-color: rgba(0, 0, 0, 0.8);
-            border: 3px solid ${config.color};
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 0 15px ${config.color};
-            cursor: pointer;
-        ">${config.symbol}</div>`,
-        iconSize: [40, 40],
-        iconAnchor: [20, 20]
-    });
-    
-    // Créer le marqueur
-    const marker = L.marker(latlng, {
-        icon: unitIcon,
-        draggable: true
-    });
-    
-    // Ajouter une popup
-    marker.bindPopup(`
-        <div style="text-align: center;">
-            <b style="color: #0f0;">${config.name}</b><br>
-            <span style="font-size: 32px;">${config.symbol}</span><br>
-            <button onclick="removeUnit(this)" style="
-                background: #f00;
-                color: #fff;
-                border: none;
-                padding: 5px 10px;
-                cursor: pointer;
-                margin-top: 10px;
-            ">Supprimer</button>
-        </div>
-    `);
-    
-    // Ajouter au groupe
-    militaryUnits.addLayer(marker);
-    
-    // Stocker l'ID du marqueur pour suppression
-    marker._unitId = Date.now();
 }
 
-// Fonction globale pour supprimer une unité (appelée depuis la popup)
-window.removeUnit = function(button) {
-    // Fermer toutes les popups et retirer le marqueur parent
-    map.eachLayer(function(layer) {
-        if (layer instanceof L.Marker && layer.getPopup() && layer.getPopup().isOpen()) {
-            militaryUnits.removeLayer(layer);
-        }
+// Sélectionner le symbole militaire
+function selectSymbol(symbolType) {
+    // Retirer la classe active de tous les boutons
+    document.querySelectorAll('.symbol-btn').forEach(btn => {
+        btn.classList.remove('active');
     });
-};
+    
+    // Activer le bouton sélectionné
+    const selectedBtn = document.querySelector(`[data-symbol="${symbolType}"]`);
+    if (selectedBtn) {
+        selectedBtn.classList.add('active');
+    }
+    
+    selectedSymbol = symbolType;
+    placementMode = true;
+    
+    // Afficher les informations de placement
+    const placementInfo = document.getElementById('placementInfo');
+    placementInfo.style.display = 'block';
+    placementInfo.textContent = `Mode placement: ${getSymbolName(symbolType)} - Cliquez sur la carte`;
+    
+    // Changer le curseur
+    map.getContainer().style.cursor = 'crosshair';
+}
 
-// Bouton pour effacer toutes les unités
-document.getElementById('clearUnits').addEventListener('click', function() {
-    if (confirm('Voulez-vous vraiment supprimer toutes les unités ?')) {
-        militaryUnits.clearLayers();
-        placementStatus.textContent = 'Toutes les unités ont été supprimées';
-        setTimeout(() => {
-            placementStatus.textContent = 'Sélectionnez une unité puis cliquez sur la carte';
-        }, 2000);
+// Obtenir le nom du symbole
+function getSymbolName(type) {
+    const names = {
+        'infantry': 'Infanterie',
+        'armor': 'Blindés',
+        'artillery': 'Artillerie',
+        'airforce': 'Aviation',
+        'navy': 'Marine',
+        'special': 'Forces Spéciales',
+        'hq': 'Quartier Général',
+        'logistics': 'Logistique',
+        'medical': 'Médical'
+    };
+    return names[type] || type;
+}
+
+// Obtenir l'icône du symbole
+function getSymbolIcon(type) {
+    const icons = {
+        'infantry': '🪖',
+        'armor': '🛡️',
+        'artillery': '💣',
+        'airforce': '✈️',
+        'navy': '⚓',
+        'special': '⭐',
+        'hq': '🏛️',
+        'logistics': '📦',
+        'medical': '⚕️'
+    };
+    return icons[type] || '📍';
+}
+
+// Placer une unité au clic sur la carte
+map.on('click', function(e) {
+    if (placementMode && selectedSymbol) {
+        const symbolIcon = getSymbolIcon(selectedSymbol);
+        const symbolName = getSymbolName(selectedSymbol);
+        
+        // Créer une icône personnalisée
+        const unitIcon = L.divIcon({
+            className: 'military-unit-marker',
+            html: `<div style="
+                background: rgba(0, 255, 0, 0.2);
+                border: 2px solid #00ff00;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            ">${symbolIcon}</div>`,
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+        });
+        
+        // Créer le marqueur
+        const marker = L.marker(e.latlng, { icon: unitIcon })
+            .bindPopup(`
+                <div style="text-align: center;">
+                    <strong style="color: #00ff00;">${symbolName}</strong><br>
+                    <small>Lat: ${e.latlng.lat.toFixed(4)}, Lng: ${e.latlng.lng.toFixed(4)}</small><br>
+                    <button onclick="removeUnit(this)" style="
+                        margin-top: 5px;
+                        background: #ff0000;
+                        color: white;
+                        border: none;
+                        padding: 5px 10px;
+                        border-radius: 3px;
+                        cursor: pointer;
+                    ">Supprimer</button>
+                </div>
+            `);
+        
+        // Stocker la référence du marqueur pour suppression
+        marker.unitId = Date.now();
+        marker.addTo(armyUnits);
+        
+        // Réinitialiser le mode de placement
+        placementMode = false;
+        selectedSymbol = null;
+        map.getContainer().style.cursor = '';
+        
+        // Masquer les informations de placement
+        document.getElementById('placementInfo').style.display = 'none';
+        
+        // Retirer la classe active des boutons
+        document.querySelectorAll('.symbol-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
     }
 });
 
-// Bouton pour annuler le placement
-document.getElementById('cancelPlacement').addEventListener('click', function() {
-    selectedUnit = null;
-    isPlacementMode = false;
-    unitButtons.forEach(b => b.classList.remove('active'));
-    placementStatus.textContent = 'Placement annulé';
-    map.getContainer().style.cursor = '';
-    setTimeout(() => {
-        placementStatus.textContent = 'Sélectionnez une unité puis cliquez sur la carte';
-    }, 1500);
-});
+// Fonction de suppression d'une unité
+function removeUnit(button) {
+    // Fermer tous les popups et trouver le marqueur à supprimer
+    map.eachLayer(function(layer) {
+        if (layer instanceof L.Marker && layer.getPopup() && layer.getPopup().isOpen()) {
+            armyUnits.removeLayer(layer);
+        }
+    });
+}
