@@ -60,11 +60,8 @@ main {
     color: #0f0 !important;
 }
 
-.legend-color {
-    width: 20px;
-    height: 20px;
-    border: 1px solid #00ff00;
-    margin-right: 10px;
+/* Légende */
+.legend {
     background-color: #000;
     border: 2px solid #0f0;
     padding: 10px 15px;
@@ -72,6 +69,7 @@ main {
     color: #0f0;
     font-family: 'Courier New', Courier, monospace;
     line-height: 1.8;
+    z-index: 500;
 }
 
 .legend h4 {
