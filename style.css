@@ -130,7 +130,14 @@ main {
     margin-top: 10px;
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
     min-width: 250px;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
     transition: all 0.3s ease;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    z-index: 1001;
 }
 
 #menuContent.menu-hidden {
