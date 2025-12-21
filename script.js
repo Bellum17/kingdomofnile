@@ -8,12 +8,12 @@ var bounds = L.latLngBounds(southWest, northEast);
 // Initialisation de la carte avec restrictions
 var map = L.map('maCarte', {
     center: [30.5, 31.2],
-    zoom: 9,
+    zoom: 7,
     minZoom: 6,
     maxZoom: 14,
     maxBounds: bounds,
     maxBoundsViscosity: 1.0  // Empêche de sortir des limites
-}).setView([30.5, 31.2], 9);
+}).setView([30.5, 31.2], 7);
 
 
 // --- 2. Ajout du fond de carte (Tiles) ---

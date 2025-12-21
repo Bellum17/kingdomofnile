@@ -5,12 +5,12 @@ var bounds = L.latLngBounds(southWest, northEast);
 
 var map = L.map('maCarte', {
     center: [30.5, 31.2],
-    zoom: 9,
+    zoom: 7,
     minZoom: 6,
     maxZoom: 14,
     maxBounds: bounds,
     maxBoundsViscosity: 1.0
-}).setView([30.5, 31.2], 9);
+}).setView([30.5, 31.2], 7);
 
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 14,
@@ -43,9 +43,9 @@ legend.addTo(map);
 
 // --- 2. Authentification Discord OAuth2 ---
 
-// CONFIGURATION À REMPLACER PAR VOS VALEURS
-const DISCORD_CLIENT_ID = 'VOTRE_CLIENT_ID'; // À remplacer
-const DISCORD_REDIRECT_URI = window.location.origin + '/editor.html'; // URL de redirection
+// CONFIGURATION DISCORD OAUTH
+const DISCORD_CLIENT_ID = '1452413073326346321';
+const DISCORD_REDIRECT_URI = 'https://bellum17.github.io/kingdomofnile/editor.html';
 const DISCORD_OAUTH_URL = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(DISCORD_REDIRECT_URI)}&response_type=token&scope=identify`;
 
 // Éléments DOM
@@ -130,25 +130,36 @@ checkAuth();
 
 // Télécharger en PNG
 document.getElementById('downloadPng').addEventListener('click', function() {
-    // Utiliser leaflet-image ou html2canvas pour capturer la carte
-    alert('Fonctionnalité PNG: Nécessite la bibliothèque leaflet-image ou html2canvas.\n\nPour implémenter:\n1. Ajouter <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>\n2. Utiliser leafletImage(map, callback) pour générer l\'image');
+    const mapElement = document.getElementById('maCarte');
     
-    // Exemple de code à implémenter:
-    /*
-    leafletImage(map, function(err, canvas) {
-        var img = document.createElement('img');
-        var dimensions = map.getSize();
-        img.width = dimensions.x;
-        img.height = dimensions.y;
-        img.src = canvas.toDataURL();
-        
-        // Télécharger l'image
-        var link = document.createElement('a');
-        link.download = 'carte-royaume-du-nil.png';
-        link.href = canvas.toDataURL();
+    // Afficher un message de chargement
+    const originalText = this.innerHTML;
+    this.innerHTML = '<span>⏳</span> Génération en cours...';
+    this.disabled = true;
+    
+    // Utiliser html2canvas pour capturer la carte
+    html2canvas(mapElement, {
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#000000',
+        scale: 2 // Qualité d'image (2x la résolution)
+    }).then(canvas => {
+        // Créer un lien de téléchargement
+        const link = document.createElement('a');
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        link.download = `carte-royaume-du-nil-${timestamp}.png`;
+        link.href = canvas.toDataURL('image/png');
         link.click();
+        
+        // Restaurer le bouton
+        document.getElementById('downloadPng').innerHTML = originalText;
+        document.getElementById('downloadPng').disabled = false;
+    }).catch(error => {
+        console.error('Erreur lors de la génération PNG:', error);
+        alert('Erreur lors de la génération de l\'image PNG');
+        document.getElementById('downloadPng').innerHTML = originalText;
+        document.getElementById('downloadPng').disabled = false;
     });
-    */
 });
 
 // Télécharger en JSON

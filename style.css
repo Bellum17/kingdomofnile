@@ -94,9 +94,9 @@ main {
 }
 
 #maCarte {
-    height: 60vh;
+    height: 70vh;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     border: 1px solid #0f0;
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
