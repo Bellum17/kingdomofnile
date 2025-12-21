@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CARTOGRAPHIE DU ROYAUME DU NIL</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="images/icon_flag_rdn.png">
+    
+    <!-- Meta tags pour Discord/Social Media Embed -->
+    <meta name="description" content="Explorez la carte interactive du Royaume du Nil - Région 39 de la Basse-Égypte">
+    <meta property="og:title" content="CARTOGRAPHIE DU ROYAUME DU NIL">
+    <meta property="og:description" content="Cartographie interactive du Royaume du Nil.">
+    <meta property="og:image" content="https://cdn.discordapp.com/attachments/1438884151054041316/1448439023499743523/icon_flag_rdn.png?ex=693b4375&is=6939f1f5&hm=6a811fe4ab50c66ecf4f43bebc0dd744b4571fefef9bfaba1ea901d91a55858e&">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Royaume du Nil">
+    <meta name="theme-color" content="#006400">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="CARTOGRAPHIE DU ROYAUME DU NIL">
+    <meta name="twitter:description" content="Cartographie interactive du Royaume du Nil.">
+    <meta name="twitter:image" content="https://cdn.discordapp.com/attachments/1438884151054041316/1448439023499743523/icon_flag_rdn.png?ex=693b4375&is=6939f1f5&hm=6a811fe4ab50c66ecf4f43bebc0dd744b4571fefef9bfaba1ea901d91a55858e&">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+     
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="home-link" title="Retour à l'accueil">← Accueil</a>
+        <h1>CARTOGRAPHIE DU ROYAUME DU NIL</h1>
+    </header>
+
+    <!-- Menu Burger -->
+    <div id="menuBurger">
+        <button id="burgerBtn">☰</button>
+        <div id="menuContent" class="menu-hidden">
+            <h3>Options de la carte</h3>
+            
+            <!-- Section Filtres -->
+            <div class="menu-section">
+                <h4>Filtres d'affichage</h4>
+                <label class="filter-option">
+                    <input type="checkbox" id="filterGouvernement" checked>
+                    <span>Symboles Gouvernementaux</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <div id="maCarte"></div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+    <script src="script.js"></script>
+</body>
+</html>

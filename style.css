@@ -1,28 +1,207 @@
 body {
+    background-color: #000;
+    color: #0f0;
+    font-family: 'Courier New', Courier, monospace;
     margin: 0;
     padding: 0;
-    font-family: sans-serif;
-    background-color: #f4f1ea; /* Un ton sable léger */
 }
 
 header {
-    background-color: #2c3e50;
-    color: white;
-    padding: 15px;
+    background-color: #050505;
+    border-bottom: 2px solid #0f0;
+    padding: 20px;
     text-align: center;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+    position: relative;
+}
+
+.home-link {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #0f0;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 15px;
+    border: 1px solid #0f0;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+    background-color: #000;
+}
+
+.home-link:hover {
+    background-color: #0f0;
+    color: #000;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+h1 {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px #0f0;
+}
+
+/* Effet de curseur clignotant */
+h1::after {
+    content: '_';
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
 }
 
 main {
     padding: 20px;
-    display: flex;
-    justify-content: center;
 }
 
-/* LE POINT CRUCIAL : Définir la taille de la carte */
 #maCarte {
-    height: 70vh; /* 70% de la hauteur de l'écran */
-    width: 90%;   /* 90% de la largeur */
-    border: 3px solid #c0a16b; /* Une bordure dorée */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    height: 80vh;
+    width: 100%;
+    border: 1px solid #0f0;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+    background-color: #000;
+}
+
+/* Filtre Matrix pour rendre la carte sombre et verte */
+.leaflet-layer {
+    filter: invert(100%) grayscale(100%) brightness(0.7) sepia(100%) hue-rotate(50deg) saturate(300%) contrast(1.2);
+}
+
+/* Customisation des contrôles Leaflet pour coller au thème */
+.leaflet-control-zoom a {
+    background-color: #000 !important;
+    color: #0f0 !important;
+    border: 1px solid #0f0 !important;
+}
+
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+    background-color: #000 !important;
+    color: #0f0 !important;
+}
+
+/* Légende */
+.legend {
+    background-color: #000;
+    border: 2px solid #0f0;
+    padding: 10px 15px;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+    color: #0f0;
+    font-family: 'Courier New', Courier, monospace;
+    line-height: 1.8;
+    z-index: 500;
+}
+
+.legend h4 {
+    margin: 0 0 10px 0;
+    color: #0f0;
+    text-transform: uppercase;
+    font-size: 14px;
+    border-bottom: 1px solid #0f0;
+    padding-bottom: 5px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+    font-size: 12px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 1px solid #0f0;
+    display: inline-block;
+}
+
+/* Menu Burger */
+#menuBurger {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    z-index: 1000;
+}
+
+#burgerBtn {
+    background-color: #000;
+    color: #0f0;
+    border: 2px solid #0f0;
+    font-size: 24px;
+    padding: 10px 15px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+#burgerBtn:hover {
+    background-color: #0f0;
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+}
+
+#menuContent {
+    background-color: #000;
+    border: 2px solid #0f0;
+    padding: 15px;
+    margin-top: 10px;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+    min-width: 320px;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+}
+
+#menuContent.menu-hidden {
+    display: none;
+}
+
+#menuContent h3 {
+    margin: 0 0 15px 0;
+    color: #0f0;
+    text-transform: uppercase;
+    font-size: 16px;
+    border-bottom: 1px solid #0f0;
+    padding-bottom: 8px;
+    letter-spacing: 2px;
+}
+
+/* Sections du menu */
+.menu-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.menu-section h4 {
+    color: #0f0;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    cursor: pointer;
+    color: #0f0;
+    font-size: 14px;
+}
+
+.filter-option input[type="checkbox"] {
+    margin-right: 10px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    accent-color: #0f0;
+}
+
+.filter-option:hover {
+    color: #0ff;
 }
