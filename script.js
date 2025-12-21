@@ -36,6 +36,70 @@ var govIcon = L.icon({
 
 // Groupe de calques pour les symboles gouvernementaux
 var gouvernementLayer = L.layerGroup();
+var unitsLayer = L.layerGroup();
+
+// Définition des icônes d'unités
+const unitIcons = {
+    'infanterie-motorisee': L.icon({
+        iconUrl: 'images/Infanterie motorisée.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'cavalerie': L.icon({
+        iconUrl: 'images/Cavalerie.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'infanterie-legere': L.icon({
+        iconUrl: 'images/Infanterie légère.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'garde-royale': L.icon({
+        iconUrl: 'images/Garde Royale.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'genie': L.icon({
+        iconUrl: 'images/Génie.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'cdfa': L.icon({
+        iconUrl: 'images/CDFA.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'commandement': L.icon({
+        iconUrl: 'images/Commandement.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'reserve': L.icon({
+        iconUrl: 'images/Réserve d\'hommes.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    })
+};
+
+const unitNames = {
+    'infanterie-motorisee': 'Infanterie motorisée',
+    'cavalerie': 'Cavalerie',
+    'infanterie-legere': 'Infanterie légère',
+    'garde-royale': 'Garde Royale',
+    'genie': 'Unité du Génie',
+    'cdfa': 'Commandement des Forces Armées',
+    'commandement': 'Commandement',
+    'reserve': 'Réserve d\'hommes'
+};
 
 // Charger la carte publiée si elle existe
 const publishedMap = localStorage.getItem('published_map');
@@ -65,6 +129,22 @@ if (publishedMap) {
             caireGov.bindPopup("<b>Le Caire</b><br>Capitale du Royaume du Nil<br><span style='color:#87CEEB'>● Gouvernement</span>");
             gouvernementLayer.addLayer(caireGov);
         }
+        
+        // Restaurer les unités
+        if (mapData.units && mapData.units.length > 0) {
+            mapData.units.forEach(function(unitData) {
+                if (unitData.type === 'unit' && unitData.unitType) {
+                    const unitIcon = unitIcons[unitData.unitType];
+                    const unitName = unitNames[unitData.unitType];
+                    
+                    if (unitIcon) {
+                        var marker = L.marker([unitData.latlng.lat, unitData.latlng.lng], {icon: unitIcon});
+                        marker.bindPopup(`<b>${unitName}</b>`);
+                        unitsLayer.addLayer(marker);
+                    }
+                }
+            });
+        }
     } catch (error) {
         console.error('Erreur lors du chargement de la carte publiée:', error);
         // Fallback: marqueur par défaut au Caire
@@ -79,8 +159,9 @@ if (publishedMap) {
     gouvernementLayer.addLayer(caireGov);
 }
 
-// Ajouter le groupe à la carte par défaut
+// Ajouter les groupes à la carte par défaut
 gouvernementLayer.addTo(map);
+unitsLayer.addTo(map);
 
 
 // --- 4. Légende de la carte ---

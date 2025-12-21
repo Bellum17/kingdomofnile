@@ -24,6 +24,11 @@
         <a href="accueil" class="home-link" title="Retour à l'accueil">← Accueil</a>
         <h1>ÉDITEUR DE CARTE - ROYAUME DU NIL</h1>
         
+        <!-- Bouton Menu Burger -->
+        <button id="burgerBtn" class="burger-btn" title="Ajouter des unités">
+            <span>☰</span> Unités
+        </button>
+        
         <!-- Panel Admin -->
         <div id="adminPanel" class="admin-panel">
             <button id="loginBtn" class="admin-btn">
@@ -36,6 +41,75 @@
             </div>
         </div>
     </header>
+
+    <!-- Menu Burger des Unités -->
+    <div id="unitMenu" class="unit-menu hidden">
+        <div class="unit-menu-header">
+            <h2>Unités Militaires</h2>
+            <button id="closeMenu" class="close-menu-btn">✕</button>
+        </div>
+        <div class="unit-menu-content">
+            <!-- Unités de Combat -->
+            <div class="unit-category">
+                <h3>Unités de Combat</h3>
+                <div class="unit-list">
+                    <div class="unit-item" data-unit="infanterie-motorisee">
+                        <img src="images/Infanterie motorisée.png" alt="Infanterie motorisée">
+                        <span>Infanterie motorisée</span>
+                    </div>
+                    <div class="unit-item" data-unit="cavalerie">
+                        <img src="images/Cavalerie.png" alt="Cavalerie">
+                        <span>Cavalerie</span>
+                    </div>
+                    <div class="unit-item" data-unit="infanterie-legere">
+                        <img src="images/Infanterie légère.png" alt="Infanterie légère">
+                        <span>Infanterie légère</span>
+                    </div>
+                    <div class="unit-item" data-unit="garde-royale">
+                        <img src="images/Garde Royale.png" alt="Garde Royale">
+                        <span>Garde Royale</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unités de Soutien -->
+            <div class="unit-category">
+                <h3>Unités de Soutien</h3>
+                <div class="unit-list">
+                    <div class="unit-item" data-unit="genie">
+                        <img src="images/Génie.png" alt="Unité du Génie">
+                        <span>Unité du Génie</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unités de Commandement -->
+            <div class="unit-category">
+                <h3>Unités de Commandement</h3>
+                <div class="unit-list">
+                    <div class="unit-item" data-unit="cdfa">
+                        <img src="images/CDFA.png" alt="Commandement des Forces Armées">
+                        <span>Commandement des Forces Armées</span>
+                    </div>
+                    <div class="unit-item" data-unit="commandement">
+                        <img src="images/Commandement.png" alt="Commandement">
+                        <span>Commandement</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Autres -->
+            <div class="unit-category">
+                <h3>Autres</h3>
+                <div class="unit-list">
+                    <div class="unit-item" data-unit="reserve">
+                        <img src="images/Réserve d'hommes.png" alt="Réserve d'hommes">
+                        <span>Réserve d'hommes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <main>
         <div id="maCarte"></div>

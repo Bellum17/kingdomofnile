@@ -59,6 +59,153 @@ const downloadPngBtn = document.getElementById('downloadPng');
 const downloadJsonBtn = document.getElementById('downloadJson');
 const loadJsonInput = document.getElementById('loadJson');
 
+// Éléments du menu burger
+const burgerBtn = document.getElementById('burgerBtn');
+const unitMenu = document.getElementById('unitMenu');
+const closeMenuBtn = document.getElementById('closeMenu');
+const unitItems = document.querySelectorAll('.unit-item');
+
+// Variables pour le placement des unités
+let selectedUnit = null;
+let placementMode = false;
+let unitsLayer = L.layerGroup().addTo(map);
+
+// Définition des icônes d'unités
+const unitIcons = {
+    'infanterie-motorisee': L.icon({
+        iconUrl: 'images/Infanterie motorisée.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'cavalerie': L.icon({
+        iconUrl: 'images/Cavalerie.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'infanterie-legere': L.icon({
+        iconUrl: 'images/Infanterie légère.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'garde-royale': L.icon({
+        iconUrl: 'images/Garde Royale.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'genie': L.icon({
+        iconUrl: 'images/Génie.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'cdfa': L.icon({
+        iconUrl: 'images/CDFA.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'commandement': L.icon({
+        iconUrl: 'images/Commandement.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    }),
+    'reserve': L.icon({
+        iconUrl: 'images/Réserve d\'hommes.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    })
+};
+
+// Noms des unités pour les popups
+const unitNames = {
+    'infanterie-motorisee': 'Infanterie motorisée',
+    'cavalerie': 'Cavalerie',
+    'infanterie-legere': 'Infanterie légère',
+    'garde-royale': 'Garde Royale',
+    'genie': 'Unité du Génie',
+    'cdfa': 'Commandement des Forces Armées',
+    'commandement': 'Commandement',
+    'reserve': 'Réserve d\'hommes'
+};
+
+// Ouvrir/Fermer le menu burger
+burgerBtn.addEventListener('click', () => {
+    unitMenu.classList.toggle('hidden');
+});
+
+closeMenuBtn.addEventListener('click', () => {
+    unitMenu.classList.add('hidden');
+});
+
+// Sélection d'une unité
+unitItems.forEach(item => {
+    item.addEventListener('click', () => {
+        // Retirer la sélection précédente
+        unitItems.forEach(i => i.classList.remove('selected'));
+        
+        // Sélectionner l'unité
+        item.classList.add('selected');
+        selectedUnit = item.dataset.unit;
+        placementMode = true;
+        
+        // Changer le curseur de la carte
+        document.getElementById('maCarte').style.cursor = 'crosshair';
+        
+        // Fermer le menu
+        unitMenu.classList.add('hidden');
+    });
+});
+
+// Placement d'unités sur la carte
+map.on('click', (e) => {
+    if (placementMode && selectedUnit) {
+        const unitIcon = unitIcons[selectedUnit];
+        const unitName = unitNames[selectedUnit];
+        
+        const marker = L.marker(e.latlng, {
+            icon: unitIcon,
+            draggable: true
+        });
+        
+        marker.bindPopup(`
+            <b>${unitName}</b><br>
+            <button onclick="removeMarker(${marker._leaflet_id})" style="
+                background-color: #ff0000;
+                color: #fff;
+                border: none;
+                padding: 5px 10px;
+                cursor: pointer;
+                border-radius: 3px;
+                margin-top: 5px;
+            ">🗑️ Supprimer</button>
+        `);
+        
+        marker.unitType = selectedUnit;
+        unitsLayer.addLayer(marker);
+        
+        // Réinitialiser le mode placement
+        placementMode = false;
+        selectedUnit = null;
+        document.getElementById('maCarte').style.cursor = '';
+        unitItems.forEach(i => i.classList.remove('selected'));
+    }
+});
+
+// Fonction pour supprimer un marqueur
+window.removeMarker = function(markerId) {
+    unitsLayer.eachLayer(layer => {
+        if (layer._leaflet_id === markerId) {
+            unitsLayer.removeLayer(layer);
+        }
+    });
+};
+
 // Variable globale pour stocker l'utilisateur actuel
 let currentUser = null;
 
@@ -214,10 +361,11 @@ document.getElementById('downloadJson').addEventListener('click', function() {
         center: map.getCenter(),
         zoom: map.getZoom(),
         markers: [],
+        units: [],
         timestamp: new Date().toISOString()
     };
     
-    // Collecter tous les marqueurs
+    // Collecter tous les marqueurs gouvernementaux
     gouvernementLayer.eachLayer(function(layer) {
         if (layer instanceof L.Marker) {
             mapData.markers.push({
@@ -228,13 +376,33 @@ document.getElementById('downloadJson').addEventListener('click', function() {
         }
     });
     
+    // Collecter toutes les unités
+    unitsLayer.eachLayer(function(layer) {
+        if (layer instanceof L.Marker) {
+            mapData.units.push({
+                latlng: layer.getLatLng(),
+                unitType: layer.unitType,
+                type: 'unit'
+            });
+        }
+    });
+    
+    // Logger l'action
+    if (currentUser) {
+        ADMIN_CONFIG.logAction(currentUser, 'download_json', {
+            unitsCount: mapData.units.length,
+            markersCount: mapData.markers.length
+        });
+    }
+    
     // Créer et télécharger le fichier JSON
     const jsonStr = JSON.stringify(mapData, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'carte-royaume-du-nil.json';
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    link.download = `carte-royaume-du-nil-${timestamp}.json`;
     link.click();
     URL.revokeObjectURL(url);
 });
@@ -254,7 +422,7 @@ document.getElementById('loadJson').addEventListener('change', function(e) {
                 map.setView([mapData.center.lat, mapData.center.lng], mapData.zoom);
             }
             
-            // Restaurer les marqueurs
+            // Restaurer les marqueurs gouvernementaux
             if (mapData.markers) {
                 gouvernementLayer.clearLayers();
                 mapData.markers.forEach(function(markerData) {
@@ -268,12 +436,46 @@ document.getElementById('loadJson').addEventListener('change', function(e) {
                 });
             }
             
+            // Restaurer les unités
+            if (mapData.units) {
+                unitsLayer.clearLayers();
+                mapData.units.forEach(function(unitData) {
+                    if (unitData.type === 'unit' && unitData.unitType) {
+                        const unitIcon = unitIcons[unitData.unitType];
+                        const unitName = unitNames[unitData.unitType];
+                        
+                        const marker = L.marker([unitData.latlng.lat, unitData.latlng.lng], {
+                            icon: unitIcon,
+                            draggable: true
+                        });
+                        
+                        marker.bindPopup(`
+                            <b>${unitName}</b><br>
+                            <button onclick="removeMarker(${marker._leaflet_id})" style="
+                                background-color: #ff0000;
+                                color: #fff;
+                                border: none;
+                                padding: 5px 10px;
+                                cursor: pointer;
+                                border-radius: 3px;
+                                margin-top: 5px;
+                            ">🗑️ Supprimer</button>
+                        `);
+                        
+                        marker.unitType = unitData.unitType;
+                        unitsLayer.addLayer(marker);
+                    }
+                });
+            }
+            
             alert('Carte chargée avec succès !');
             
             // Logger l'action
             if (currentUser) {
-                ADMIN_CONFIG.logAction(currentUser.id, currentUser.username, 'load_json', {
-                    filename: file.name
+                ADMIN_CONFIG.logAction(currentUser, 'load_json', {
+                    filename: file.name,
+                    unitsCount: mapData.units ? mapData.units.length : 0,
+                    markersCount: mapData.markers ? mapData.markers.length : 0
                 });
             }
         } catch (error) {
@@ -299,18 +501,30 @@ publishBtn.addEventListener('click', function() {
         center: map.getCenter(),
         zoom: map.getZoom(),
         markers: [],
+        units: [],
         timestamp: new Date().toISOString(),
         publishedBy: currentUser.username,
         publishedById: currentUser.id
     };
     
-    // Collecter tous les marqueurs
+    // Collecter tous les marqueurs gouvernementaux
     gouvernementLayer.eachLayer(function(layer) {
         if (layer instanceof L.Marker) {
             mapData.markers.push({
                 latlng: layer.getLatLng(),
                 popup: layer.getPopup() ? layer.getPopup().getContent() : null,
                 type: 'government'
+            });
+        }
+    });
+    
+    // Collecter toutes les unités
+    unitsLayer.eachLayer(function(layer) {
+        if (layer instanceof L.Marker) {
+            mapData.units.push({
+                latlng: layer.getLatLng(),
+                unitType: layer.unitType,
+                type: 'unit'
             });
         }
     });
@@ -322,10 +536,11 @@ publishBtn.addEventListener('click', function() {
     localStorage.setItem('published_map', JSON.stringify(mapData));
     
     // Logger l'action
-    ADMIN_CONFIG.logAction(currentUser.id, currentUser.username, 'publish_map', {
+    ADMIN_CONFIG.logAction(currentUser, 'publish_map', {
         versionId: versionId,
-        markerCount: mapData.markers.length
+        markerCount: mapData.markers.length,
+        unitsCount: mapData.units.length
     });
     
-    alert('✅ Carte publiée avec succès !\n\nVersion sauvegardée avec l\'ID: ' + versionId);
+    alert(`✅ Carte publiée avec succès !\n\nVersion sauvegardée avec l'ID: ${versionId}\nMarqueurs: ${mapData.markers.length}\nUnités: ${mapData.units.length}`);
 });
