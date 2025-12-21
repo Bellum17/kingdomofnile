@@ -59,6 +59,8 @@ let coordMode = false;
 let measurePoints = [];
 let measureLine = null;
 let measureMarkers = [];
+let isDrawing = false;
+let coordMarkers = [];
 
 // Définition des icônes d'unités (format rectangulaire)
 const unitIcons = {
@@ -210,6 +212,7 @@ document.addEventListener('keydown', (e) => {
             coordBtn.classList.remove('active');
             document.getElementById('maCarte').style.cursor = '';
             hideCoordDisplay();
+            resetCoordMarkers();
         }
     }
 });
@@ -254,6 +257,7 @@ function hideCoordDisplay() {
 // Fonction pour réinitialiser la mesure
 function resetMeasure() {
     measureMode = false;
+    isDrawing = false;
     measureBtn.classList.remove('active');
     document.getElementById('maCarte').style.cursor = '';
     measureInfo.classList.remove('visible');
@@ -268,10 +272,16 @@ function resetMeasure() {
     measurePoints = [];
 }
 
+// Fonction pour réinitialiser les coordonnées
+function resetCoordMarkers() {
+    coordMarkers.forEach(m => map.removeLayer(m));
+    coordMarkers = [];
+}
+
 // Fonction pour mettre à jour l'affichage de la mesure
 function updateMeasureDisplay() {
     const totalDistance = calculateTotalDistance();
-    measureInfo.innerHTML = `Distance: ${totalDistance.toFixed(2)} km<div class="hint">Cliquez pour ajouter des points. Double-clic pour terminer.</div>`;
+    measureInfo.innerHTML = `Distance: ${totalDistance.toFixed(2)} km<div class="hint">Maintenez le clic pour tracer. Recliquez pour terminer.</div>`;
 }
 
 // Bouton de mesure
@@ -292,7 +302,7 @@ measureBtn.addEventListener('click', () => {
         measureBtn.classList.add('active');
         document.getElementById('maCarte').style.cursor = 'crosshair';
         measureInfo.classList.add('visible');
-        measureInfo.innerHTML = 'Distance: 0 km<div class="hint">Cliquez pour ajouter des points. Double-clic pour terminer.</div>';
+        measureInfo.innerHTML = 'Distance: 0 km<div class="hint">Maintenez le clic pour tracer. Recliquez pour terminer.</div>';
     }
 });
 
@@ -317,13 +327,58 @@ coordBtn.addEventListener('click', () => {
     }
 });
 
-// Gestion des clics sur la carte pour les outils
-map.on('click', (e) => {
-    // Mode mesure
-    if (measureMode) {
+// Gestion du mode mesure avec mousedown/mousemove/mouseup
+map.on('mousedown', (e) => {
+    if (measureMode && !isDrawing) {
+        isDrawing = true;
+        measurePoints = [e.latlng];
+        
+        // Ajouter le premier marqueur
+        const pointMarker = L.circleMarker(e.latlng, {
+            radius: 5,
+            color: '#0f0',
+            fillColor: '#0f0',
+            fillOpacity: 1
+        }).addTo(map);
+        measureMarkers = [pointMarker];
+        
+        if (measureLine) {
+            map.removeLayer(measureLine);
+        }
+    }
+});
+
+map.on('mousemove', (e) => {
+    // Mode mesure : tracer en temps réel pendant le drag
+    if (measureMode && isDrawing) {
         measurePoints.push(e.latlng);
         
-        // Ajouter un petit marqueur
+        // Mettre à jour la ligne en temps réel
+        if (measureLine) {
+            map.removeLayer(measureLine);
+        }
+        measureLine = L.polyline(measurePoints, {
+            color: '#0f0',
+            weight: 3,
+            opacity: 0.8,
+            dashArray: '10, 10'
+        }).addTo(map);
+        
+        updateMeasureDisplay();
+        return;
+    }
+    
+    // Mode coordonnées : afficher les coordonnées au survol
+    if (coordMode) {
+        showCoordDisplay(e.latlng.lat, e.latlng.lng);
+    }
+});
+
+map.on('mouseup', (e) => {
+    if (measureMode && isDrawing) {
+        isDrawing = false;
+        
+        // Ajouter un marqueur à la fin du tracé
         const pointMarker = L.circleMarker(e.latlng, {
             radius: 5,
             color: '#0f0',
@@ -332,26 +387,34 @@ map.on('click', (e) => {
         }).addTo(map);
         measureMarkers.push(pointMarker);
         
-        // Mettre à jour la ligne
-        if (measureLine) {
-            map.removeLayer(measureLine);
-        }
-        if (measurePoints.length > 1) {
-            measureLine = L.polyline(measurePoints, {
-                color: '#0f0',
-                weight: 3,
-                opacity: 0.8,
-                dashArray: '10, 10'
-            }).addTo(map);
-        }
-        
-        updateMeasureDisplay();
-        return;
+        // Afficher le résultat final
+        const totalDistance = calculateTotalDistance();
+        measureInfo.innerHTML = `Distance: ${totalDistance.toFixed(2)} km<div class="hint">Maintenez le clic pour un nouveau tracé, ou cliquez sur ✎ pour réinitialiser.</div>`;
     }
-    
-    // Mode coordonnées
+});
+
+// Gestion des clics sur la carte pour les outils
+map.on('click', (e) => {
+    // Mode coordonnées : placer un marqueur permanent avec popup
     if (coordMode) {
-        showCoordDisplay(e.latlng.lat, e.latlng.lng);
+        const coordMarker = L.marker(e.latlng, {
+            icon: L.divIcon({
+                className: 'coord-marker',
+                html: '<div style="background-color: rgba(0,255,0,0.8); width: 10px; height: 10px; border-radius: 50%; border: 2px solid #0f0;"></div>',
+                iconSize: [10, 10],
+                iconAnchor: [5, 5]
+            })
+        }).addTo(map);
+        
+        coordMarker.bindPopup(`
+            <div style="color: #0f0; font-family: 'Courier New', monospace; font-size: 12px;">
+                <b>Coordonnées</b><br>
+                Lat: ${e.latlng.lat.toFixed(5)}<br>
+                Lng: ${e.latlng.lng.toFixed(5)}
+            </div>
+        `).openPopup();
+        
+        coordMarkers.push(coordMarker);
         return;
     }
     
@@ -397,27 +460,6 @@ map.on('click', (e) => {
         selectedUnit = null;
         document.getElementById('maCarte').style.cursor = '';
         unitItems.forEach(i => i.classList.remove('selected'));
-    }
-});
-
-// Double-clic pour terminer la mesure
-map.on('dblclick', (e) => {
-    if (measureMode && measurePoints.length > 0) {
-        // Afficher le résultat final
-        const totalDistance = calculateTotalDistance();
-        measureInfo.innerHTML = `Distance totale: ${totalDistance.toFixed(2)} km<div class="hint">Cliquez sur ✎ pour une nouvelle mesure.</div>`;
-        
-        // Désactiver le mode mesure mais garder l'affichage
-        measureMode = false;
-        measureBtn.classList.remove('active');
-        document.getElementById('maCarte').style.cursor = '';
-    }
-});
-
-// Afficher les coordonnées au survol si en mode coordonnées
-map.on('mousemove', (e) => {
-    if (coordMode) {
-        showCoordDisplay(e.latlng.lat, e.latlng.lng);
     }
 });
 
@@ -572,54 +614,54 @@ document.getElementById('downloadPng').addEventListener('click', function() {
 
 // Télécharger en JSON
 document.getElementById('downloadJson').addEventListener('click', function() {
-    const mapData = {
-        center: map.getCenter(),
-        zoom: map.getZoom(),
-        markers: [],
-        units: [],
-        timestamp: new Date().toISOString()
-    };
+    // Afficher un indicateur de chargement
+    const originalText = this.innerHTML;
+    this.innerHTML = '<span>⏳</span> Génération...';
+    this.disabled = true;
     
-    // Collecter tous les marqueurs gouvernementaux
-    gouvernementLayer.eachLayer(function(layer) {
-        if (layer instanceof L.Marker) {
-            mapData.markers.push({
-                latlng: layer.getLatLng(),
-                popup: layer.getPopup() ? layer.getPopup().getContent() : null,
-                type: 'government'
-            });
-        }
-    });
-    
-    // Collecter toutes les unités
-    unitsLayer.eachLayer(function(layer) {
-        if (layer instanceof L.Marker) {
-            mapData.units.push({
-                latlng: layer.getLatLng(),
-                unitType: layer.unitType,
-                type: 'unit'
-            });
-        }
-    });
-    
-    // Logger l'action
-    if (currentUser) {
-        ADMIN_CONFIG.logAction(currentUser, 'download_json', {
-            unitsCount: mapData.units.length,
-            markersCount: mapData.markers.length
+    // Utiliser un setTimeout pour permettre l'affichage de l'indicateur
+    setTimeout(() => {
+        const mapData = {
+            center: map.getCenter(),
+            zoom: map.getZoom(),
+            units: [],
+            timestamp: new Date().toISOString()
+        };
+        
+        // Collecter toutes les unités
+        unitsLayer.eachLayer(function(layer) {
+            if (layer instanceof L.Marker) {
+                mapData.units.push({
+                    latlng: layer.getLatLng(),
+                    unitType: layer.unitType,
+                    type: 'unit'
+                });
+            }
         });
-    }
-    
-    // Créer et télécharger le fichier JSON
-    const jsonStr = JSON.stringify(mapData, null, 2);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    link.download = `carte-royaume-du-nil-${timestamp}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
+        
+        // Logger l'action
+        if (currentUser) {
+            ADMIN_CONFIG.logAction(currentUser, 'download_json', {
+                unitsCount: mapData.units.length
+            });
+        }
+        
+        // Créer et télécharger le fichier JSON
+        const jsonStr = JSON.stringify(mapData, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        link.download = `carte-royaume-du-nil-${timestamp}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+        
+        // Restaurer le bouton
+        const btn = document.getElementById('downloadJson');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }, 100);
 });
 
 // Charger un JSON
@@ -635,20 +677,6 @@ document.getElementById('loadJson').addEventListener('change', function(e) {
             // Restaurer la position de la carte
             if (mapData.center && mapData.zoom) {
                 map.setView([mapData.center.lat, mapData.center.lng], mapData.zoom);
-            }
-            
-            // Restaurer les marqueurs gouvernementaux
-            if (mapData.markers) {
-                gouvernementLayer.clearLayers();
-                mapData.markers.forEach(function(markerData) {
-                    if (markerData.type === 'government') {
-                        var marker = L.marker([markerData.latlng.lat, markerData.latlng.lng], {icon: govIcon});
-                        if (markerData.popup) {
-                            marker.bindPopup(markerData.popup);
-                        }
-                        gouvernementLayer.addLayer(marker);
-                    }
-                });
             }
             
             // Restaurer les unités
@@ -699,8 +727,7 @@ document.getElementById('loadJson').addEventListener('change', function(e) {
             if (currentUser) {
                 ADMIN_CONFIG.logAction(currentUser, 'load_json', {
                     filename: file.name,
-                    unitsCount: mapData.units ? mapData.units.length : 0,
-                    markersCount: mapData.markers ? mapData.markers.length : 0
+                    unitsCount: mapData.units ? mapData.units.length : 0
                 });
             }
         } catch (error) {
@@ -721,51 +748,51 @@ publishBtn.addEventListener('click', function() {
         return;
     }
     
-    // Collecter les données de la carte
-    const mapData = {
-        center: map.getCenter(),
-        zoom: map.getZoom(),
-        markers: [],
-        units: [],
-        timestamp: new Date().toISOString(),
-        publishedBy: currentUser.username,
-        publishedById: currentUser.id
-    };
+    // Afficher un indicateur de chargement
+    const originalText = this.innerHTML;
+    this.innerHTML = '<span>⏳</span> Publication en cours...';
+    this.disabled = true;
     
-    // Collecter tous les marqueurs gouvernementaux
-    gouvernementLayer.eachLayer(function(layer) {
-        if (layer instanceof L.Marker) {
-            mapData.markers.push({
-                latlng: layer.getLatLng(),
-                popup: layer.getPopup() ? layer.getPopup().getContent() : null,
-                type: 'government'
-            });
-        }
-    });
-    
-    // Collecter toutes les unités
-    unitsLayer.eachLayer(function(layer) {
-        if (layer instanceof L.Marker) {
-            mapData.units.push({
-                latlng: layer.getLatLng(),
-                unitType: layer.unitType,
-                type: 'unit'
-            });
-        }
-    });
-    
-    // Sauvegarder la version actuelle avant de publier
-    const versionId = ADMIN_CONFIG.saveMapVersion(mapData, currentUser.id, currentUser.username);
-    
-    // Publier (sauvegarder comme carte actuelle)
-    localStorage.setItem('published_map', JSON.stringify(mapData));
-    
-    // Logger l'action
-    ADMIN_CONFIG.logAction(currentUser, 'publish_map', {
-        versionId: versionId,
-        markerCount: mapData.markers.length,
-        unitsCount: mapData.units.length
-    });
-    
-    alert(`✅ Carte publiée avec succès !\n\nVersion sauvegardée avec l'ID: ${versionId}\nMarqueurs: ${mapData.markers.length}\nUnités: ${mapData.units.length}`);
+    // Utiliser un setTimeout pour permettre l'affichage de l'indicateur
+    setTimeout(() => {
+        // Collecter les données de la carte
+        const mapData = {
+            center: map.getCenter(),
+            zoom: map.getZoom(),
+            units: [],
+            timestamp: new Date().toISOString(),
+            publishedBy: currentUser.username,
+            publishedById: currentUser.id
+        };
+        
+        // Collecter toutes les unités
+        unitsLayer.eachLayer(function(layer) {
+            if (layer instanceof L.Marker) {
+                mapData.units.push({
+                    latlng: layer.getLatLng(),
+                    unitType: layer.unitType,
+                    type: 'unit'
+                });
+            }
+        });
+        
+        // Sauvegarder la version actuelle avant de publier
+        const versionId = ADMIN_CONFIG.saveMapVersion(mapData, currentUser.id, currentUser.username);
+        
+        // Publier (sauvegarder comme carte actuelle)
+        localStorage.setItem('published_map', JSON.stringify(mapData));
+        
+        // Logger l'action
+        ADMIN_CONFIG.logAction(currentUser, 'publish_map', {
+            versionId: versionId,
+            unitsCount: mapData.units.length
+        });
+        
+        // Restaurer le bouton
+        const btn = document.getElementById('publishMap');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        
+        alert(`✅ Carte publiée avec succès !\n\nVersion sauvegardée avec l'ID: ${versionId}\nUnités: ${mapData.units.length}\n\n🔄 Rechargez la page "Carte Actuelle" pour voir les modifications.`);
+    }, 100);
 });

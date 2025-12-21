@@ -475,6 +475,12 @@
     color: #ff0000 !important;
 }
 
+/* Marqueurs de coordonnées personnalisés */
+.coord-marker {
+    background: none !important;
+    border: none !important;
+}
+
 .unit-delete-btn {
     background-color: #ff0000;
     color: #fff;
