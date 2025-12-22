@@ -196,14 +196,92 @@ unitItems.forEach(item => {
         // Changer le curseur de la carte
         document.getElementById('maCarte').style.cursor = 'crosshair';
         
-        // Fermer le menu
-        closeAllMenus();
+        // NE PLUS FERMER LE MENU - permettre de sélectionner plusieurs unités
+        // closeAllMenus();
     });
 });
 
 // Stockage global des marqueurs pour suppression
 let markerIdCounter = 0;
 const markersMap = new Map();
+
+// Variables pour le copier-coller d'unités
+let copiedUnitType = null;
+let mousePosition = null;
+
+// Suivre la position de la souris sur la carte
+map.on('mousemove', (e) => {
+    mousePosition = e.latlng;
+});
+
+// Gestion du copier-coller avec Ctrl+C et Ctrl+V
+document.addEventListener('keydown', (e) => {
+    // Ctrl+V ou Cmd+V pour coller
+    if ((e.ctrlKey || e.metaKey) && e.key === 'v' && copiedUnitType && mousePosition) {
+        e.preventDefault();
+        
+        const unitIcon = unitIcons[copiedUnitType];
+        const unitName = unitNames[copiedUnitType];
+        const markerId = ++markerIdCounter;
+        
+        const marker = L.marker(mousePosition, {
+            icon: unitIcon,
+            draggable: true
+        });
+        
+        markersMap.set(markerId, marker);
+        marker.customId = markerId;
+        marker.unitType = copiedUnitType;
+        
+        // Créer le popup avec boutons copier et supprimer
+        const popupContent = document.createElement('div');
+        popupContent.innerHTML = `
+            <b>${unitName}</b>
+            <button class="unit-copy-btn" data-marker-id="${markerId}" data-unit-type="${copiedUnitType}">📋 Copier</button>
+            <button class="unit-delete-btn" data-marker-id="${markerId}">🗑️ Supprimer</button>
+        `;
+        
+        popupContent.querySelector('.unit-copy-btn').addEventListener('click', function() {
+            const unitType = this.dataset.unitType;
+            copiedUnitType = unitType;
+            
+            const notification = document.createElement('div');
+            notification.className = 'copy-notification';
+            notification.innerHTML = `✅ ${unitNames[unitType]} copié(e) !<br><small>Ctrl+V pour coller</small>`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 10);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        });
+        
+        popupContent.querySelector('.unit-delete-btn').addEventListener('click', function() {
+            const id = parseInt(this.dataset.markerId);
+            const markerToRemove = markersMap.get(id);
+            if (markerToRemove) {
+                unitsLayer.removeLayer(markerToRemove);
+                markersMap.delete(id);
+            }
+        });
+        
+        marker.bindPopup(popupContent);
+        unitsLayer.addLayer(marker);
+        
+        // Notification de collage
+        const notification = document.createElement('div');
+        notification.className = 'copy-notification';
+        notification.innerHTML = `✅ ${unitName} collé(e) !`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => notification.classList.add('show'), 10);
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 1500);
+    }
+});
 
 // Annuler le mode placement avec Echap
 document.addEventListener('keydown', (e) => {
@@ -481,8 +559,30 @@ map.on('click', (e) => {
         const popupContent = document.createElement('div');
         popupContent.innerHTML = `
             <b>${unitName}</b>
+            <button class="unit-copy-btn" data-marker-id="${markerId}" data-unit-type="${selectedUnit}">📋 Copier</button>
             <button class="unit-delete-btn" data-marker-id="${markerId}">🗑️ Supprimer</button>
         `;
+        
+        // Ajouter l'événement de copie
+        popupContent.querySelector('.unit-copy-btn').addEventListener('click', function() {
+            const unitType = this.dataset.unitType;
+            copiedUnitType = unitType;
+            
+            // Afficher une notification
+            const notification = document.createElement('div');
+            notification.className = 'copy-notification';
+            notification.innerHTML = `✅ ${unitNames[unitType]} copié(e) !<br><small>Ctrl+V pour coller</small>`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        });
         
         // Ajouter l'événement de suppression
         popupContent.querySelector('.unit-delete-btn').addEventListener('click', function() {

@@ -777,6 +777,27 @@
     border: none !important;
 }
 
+.unit-copy-btn {
+    background-color: #0f0;
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: block;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.unit-copy-btn:hover {
+    background-color: #00cc00;
+    transform: scale(1.02);
+}
+
 .unit-delete-btn {
     background-color: #ff0000;
     color: #fff;
@@ -796,6 +817,37 @@
 .unit-delete-btn:hover {
     background-color: #cc0000;
     transform: scale(1.02);
+}
+
+/* Notification de copie */
+.copy-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.95);
+    color: #0f0;
+    border: 2px solid #0f0;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.3s ease;
+}
+
+.copy-notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.copy-notification small {
+    display: block;
+    margin-top: 5px;
+    font-size: 11px;
+    opacity: 0.8;
 }
 
 /* Affichage des coordonnées */
