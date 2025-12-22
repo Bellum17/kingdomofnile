@@ -1,6 +1,14 @@
 // API Vercel pour charger la carte depuis GitHub Gist
 // GET /api/load
 
+// Importer la config locale si disponible, sinon utiliser les env vars
+let config;
+try {
+    config = require('./config.js');
+} catch (e) {
+    config = {};
+}
+
 module.exports = async function handler(req, res) {
     // Activer CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -21,7 +29,8 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const GIST_ID = process.env.GIST_ID;
+        // Priorité : config.js > environment variables
+        const GIST_ID = config.GIST_ID || process.env.GIST_ID;
         const GIST_FILENAME = 'kingdom-of-nile-map.json';
 
         if (!GIST_ID) {

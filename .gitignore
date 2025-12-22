@@ -1,5 +1,6 @@
 # Configuration locale
 gist-config.js
+api/config.js
 
 # Variables d'environnement
 .env

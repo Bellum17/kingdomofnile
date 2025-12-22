@@ -2,6 +2,14 @@
 // POST /api/publish
 // Body: { mapData: {...} }
 
+// Importer la config locale si disponible, sinon utiliser les env vars
+let config;
+try {
+    config = require('./config.js');
+} catch (e) {
+    config = {};
+}
+
 module.exports = async function handler(req, res) {
     // Activer CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -28,8 +36,9 @@ module.exports = async function handler(req, res) {
             return res.status(400).json({ error: 'mapData is required' });
         }
 
-        const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-        const GIST_ID = process.env.GIST_ID || '';
+        // Priorité : config.js > environment variables
+        const GITHUB_TOKEN = config.GITHUB_TOKEN || process.env.GITHUB_TOKEN;
+        const GIST_ID = config.GIST_ID || process.env.GIST_ID || '';
         const GIST_FILENAME = 'kingdom-of-nile-map.json';
 
         if (!GITHUB_TOKEN) {
