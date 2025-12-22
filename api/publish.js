@@ -39,6 +39,11 @@ module.exports = async function handler(req, res) {
         const GIST_ID = process.env.GIST_ID || '';
         const GIST_FILENAME = 'kingdom-of-nile-map.json';
 
+        // Debug: vérifier que le token existe
+        console.log('Token présent:', !!GITHUB_TOKEN);
+        console.log('Token commence par ghp_:', GITHUB_TOKEN?.startsWith('ghp_'));
+        console.log('Token length:', GITHUB_TOKEN?.length);
+
         if (!GITHUB_TOKEN) {
             return res.status(500).json({ error: 'GitHub token not configured' });
         }
