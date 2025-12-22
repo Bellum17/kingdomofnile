@@ -35,15 +35,20 @@
         <a href="accueil" class="home-link" title="Retour à l'accueil">← Accueil</a>
         <h1>CARTOGRAPHIE DU ROYAUME DU NIL</h1>
         
-        <!-- Panel de connexion Discord -->
-        <div id="discordPanel" class="discord-panel-map">
-            <button id="loginBtn" class="discord-login-btn">
-                <span>🔐</span> Connexion Discord
+        <!-- Panel de connexion Discord et Mode sombre -->
+        <div class="header-controls">
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Changer le thème">
+                <span class="theme-icon">🌙</span>
             </button>
-            <div id="userInfo" class="discord-user-info hidden">
-                <img id="userAvatar" src="" alt="Avatar" class="discord-avatar">
-                <span id="userName"></span>
-                <button id="logoutBtn" class="discord-logout-btn">Déconnexion</button>
+            <div id="discordPanel" class="discord-panel-map">
+                <button id="loginBtn" class="discord-login-btn">
+                    <span>🔐</span> Connexion Discord
+                </button>
+                <div id="userInfo" class="discord-user-info hidden">
+                    <img id="userAvatar" src="" alt="Avatar" class="discord-avatar">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="discord-logout-btn">Déconnexion</button>
+                </div>
             </div>
         </div>
     </header>

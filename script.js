@@ -1,4 +1,24 @@
 // --- 1. Initialisation de la carte ---
+
+// Gestion du thème clair/sombre
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const themeIcon = document.querySelector('.theme-icon');
+
+// Charger le thème sauvegardé
+const savedTheme = localStorage.getItem('theme') || 'dark';
+if (savedTheme === 'light') {
+    document.body.classList.add('light-mode');
+    themeIcon.textContent = '☀️';
+}
+
+// Basculer le thème
+themeToggleBtn.addEventListener('click', () => {
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
+    themeIcon.textContent = isLight ? '☀️' : '🌙';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+});
+
 // Carte centrée sur la région 39 (Nord de l'Égypte - Delta du Nil)
 // Définition des limites pour toute l'Égypte
 var southWest = L.latLng(22.0, 25.0);  // Coin sud-ouest (frontière soudanaise)

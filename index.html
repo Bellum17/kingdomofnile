@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royaume du Nil - Accueil</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="images/icon_flag_rdn.png">
+    
+    <!-- Meta tags pour Discord/Social Media Embed -->
+    <meta name="description" content="Bienvenue au Royaume du Nil - Explorez la cartographie interactive de l'Égypte">
+    <meta property="og:title" content="ROYAUME DU NIL">
+    <meta property="og:description" content="Découvrez la cartographie interactive du Royaume du Nil.">
+    <meta property="og:image" content="https://cdn.discordapp.com/attachments/1438884151054041316/1448439023499743523/icon_flag_rdn.png?ex=693b4375&is=6939f1f5&hm=6a811fe4ab50c66ecf4f43bebc0dd744b4571fefef9bfaba1ea901d91a55858e&">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Royaume du Nil">
+    <meta name="theme-color" content="#006400">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="ROYAUME DU NIL">
+    <meta name="twitter:description" content="Découvrez la cartographie interactive du Royaume du Nil.">
+    <meta name="twitter:image" content="https://cdn.discordapp.com/attachments/1438884151054041316/1448439023499743523/icon_flag_rdn.png?ex=693b4375&is=6939f1f5&hm=6a811fe4ab50c66ecf4f43bebc0dd744b4571fefef9bfaba1ea901d91a55858e&">
+    
+    <link rel="stylesheet" href="home-style.css">
+</head>
+<body>
+    <!-- Panel de connexion Discord -->
+    <div id="discordPanel" class="discord-panel">
+        <button id="loginBtn" class="discord-login-btn">
+            <span>🔐</span> Connexion Discord
+        </button>
+        <div id="userInfo" class="discord-user-info hidden">
+            <img id="userAvatar" src="" alt="Avatar" class="discord-avatar">
+            <span id="userName"></span>
+            <button id="logoutBtn" class="discord-logout-btn">Déconnexion</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <header class="hero">
+            <div class="flag-container">
+                <img src="images/Flag_Nil.svg.png" alt="Drapeau du Royaume du Nil" class="flag">
+            </div>
+            <h1 class="title">ROYAUME DU NIL</h1>
+            <p class="subtitle">مملكة النيل</p>
+            <div class="divider"></div>
+            <p class="description">Explorez la cartographie interactive de l'Égypte</p>
+        </header>
+
+        <main class="content">
+            <div class="button-container">
+                <a href="map.html" class="cta-button">
+                    <span class="button-text">CARTE ACTUELLE</span>
+                    <span class="button-arrow">→</span>
+                </a>
+                <a href="editor.html" class="cta-button">
+                    <span class="button-text">ÉDITEUR DE CARTE</span>
+                    <span class="button-arrow">✎</span>
+                </a>
+                <a href="admin-panel.html" class="cta-button panel-button" id="govPanelBtn">
+                    <span class="button-text">PANEL GOUVERNEMENTAL</span>
+                    <span class="button-arrow">⚙️</span>
+                </a>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2025 Royaume du Nil - Tous droits réservés</p>
+        </footer>
+    </div>
+
+    <script src="admin-config.js"></script>
+    <script>
+        // Configuration Discord OAuth
+        const DISCORD_CLIENT_ID = '1452413073326346321';
+        const DISCORD_REDIRECT_URI = 'https://bellum17.github.io/kingdomofnile/index.html';
+        const DISCORD_OAUTH_URL = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(DISCORD_REDIRECT_URI)}&response_type=token&scope=identify`;
+        
+        // Éléments DOM
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userInfo = document.getElementById('userInfo');
+        const userAvatar = document.getElementById('userAvatar');
+        const userName = document.getElementById('userName');
+        
+        // Vérifier si l'utilisateur est déjà connecté
+        function checkAuth() {
+            const token = localStorage.getItem('discord_token');
+            const userData = localStorage.getItem('current_user');
+            if (token && userData) {
+                const user = JSON.parse(userData);
+                displayUser(user);
+            } else if (token) {
+                fetchUserInfo(token);
+            }
+        }
+        
+        // Récupérer les informations de l'utilisateur
+        async function fetchUserInfo(token) {
+            try {
+                const response = await fetch('https://discord.com/api/users/@me', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    localStorage.setItem('current_user', JSON.stringify(user));
+                    displayUser(user);
+                    ADMIN_CONFIG.logConnection(user);
+                } else {
+                    localStorage.removeItem('discord_token');
+                    localStorage.removeItem('current_user');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                localStorage.removeItem('discord_token');
+            }
+        }
+        
+        // Afficher les informations de l'utilisateur
+        function displayUser(user) {
+            const avatarUrl = user.avatar 
+                ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+                : 'https://cdn.discordapp.com/embed/avatars/0.png';
+            
+            userAvatar.src = avatarUrl;
+            userName.textContent = user.username;
+            
+            loginBtn.style.display = 'none';
+            userInfo.classList.remove('hidden');
+        }
+        
+        // Connexion
+        loginBtn.addEventListener('click', () => {
+            window.location.href = DISCORD_OAUTH_URL;
+        });
+        
+        // Déconnexion
+        logoutBtn.addEventListener('click', () => {
+            const currentUser = JSON.parse(localStorage.getItem('current_user'));
+            if (currentUser) {
+                ADMIN_CONFIG.logAction(currentUser.id, currentUser.username, 'logout');
+            }
+            localStorage.removeItem('discord_token');
+            localStorage.removeItem('current_user');
+            loginBtn.style.display = 'flex';
+            userInfo.classList.add('hidden');
+        });
+        
+        // Gérer le retour OAuth2
+        function handleOAuthCallback() {
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            const token = params.get('access_token');
+            
+            if (token) {
+                localStorage.setItem('discord_token', token);
+                window.location.hash = '';
+                fetchUserInfo(token);
+            }
+        }
+        
+        handleOAuthCallback();
+        checkAuth();
+        
+        // Effet de curseur clignotant sur le titre
+        const title = document.querySelector('.title');
+        setInterval(() => {
+            title.classList.toggle('blink');
+        }, 500);
+        
+        // Vérifier l'accès au panel gouvernemental
+        document.getElementById('govPanelBtn').addEventListener('click', function(e) {
+            const currentUser = JSON.parse(localStorage.getItem('current_user'));
+            
+            if (!currentUser || !ADMIN_CONFIG.isAdmin(currentUser.id)) {
+                e.preventDefault();
+                alert('Vous n\'êtes pas autorisés à accéder au Panel du gouvernement nilien.');
+            }
+        });
+    </script>
+</body>
+</html>

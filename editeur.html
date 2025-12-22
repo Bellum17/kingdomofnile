@@ -64,6 +64,9 @@
                 <button id="burgerBtnCivil" class="burger-btn" title="Ajouter des unités civiles">
                     <span>☰</span> Unités civiles
                 </button>
+                <button id="burgerBtnInfra" class="burger-btn" title="Ajouter des infrastructures">
+                    <span>☰</span> Infrastructures
+                </button>
             </div>
             
             <!-- Menu des Unités Militaires sur la carte -->
@@ -148,6 +151,20 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Menu des Infrastructures sur la carte -->
+            <div id="unitMenuInfra" class="unit-menu hidden">
+                <div class="unit-menu-header">
+                    <h2>Infrastructures</h2>
+                    <button id="closeMenuInfra" class="close-menu-btn">✕</button>
+                </div>
+                <div class="unit-menu-content">
+                    <div class="empty-menu-message">
+                        <span>🏗️</span>
+                        <p>Aucune infrastructure disponible pour le moment</p>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <!-- Boutons de téléchargement -->
@@ -167,10 +184,28 @@
                 <button id="publishMap" class="download-btn publish-btn" disabled>
                     <span>🚀</span> Publier sur la carte actuelle
                 </button>
+                <button id="deleteSavesBtn" class="download-btn delete-saves-btn" title="Supprimer toutes les sauvegardes">
+                    <span>🗑️</span> Supprimer les sauvegardes
+                </button>
             </div>
             <p id="publishInfo" class="publish-info hidden">⚠️ Seuls les administrateurs peuvent publier les modifications</p>
         </div>
     </main>
+
+    <!-- Popup de confirmation de suppression -->
+    <div id="deleteConfirmPopup" class="delete-confirm-popup hidden">
+        <div class="popup-content">
+            <h2>⚠️ Confirmation de suppression</h2>
+            <p>Cette action va supprimer <strong>TOUTES</strong> les sauvegardes locales de la carte.</p>
+            <p>Pour confirmer, entrez le code de sécurité :</p>
+            <input type="text" id="deletePasswordInput" class="delete-password-input" placeholder="Code de sécurité" maxlength="6">
+            <div class="popup-buttons">
+                <button id="confirmDeleteBtn" class="popup-btn confirm-btn">Confirmer</button>
+                <button id="cancelDeleteBtn" class="popup-btn cancel-btn">Annuler</button>
+            </div>
+            <p class="password-hint">💡 Le code est nécessaire pour des raisons de sécurité</p>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="

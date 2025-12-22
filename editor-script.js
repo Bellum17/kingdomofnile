@@ -38,10 +38,13 @@ const loadJsonInput = document.getElementById('loadJson');
 // Éléments du menu burger
 const burgerBtnMilitaire = document.getElementById('burgerBtnMilitaire');
 const burgerBtnCivil = document.getElementById('burgerBtnCivil');
+const burgerBtnInfra = document.getElementById('burgerBtnInfra');
 const unitMenuMilitaire = document.getElementById('unitMenuMilitaire');
 const unitMenuCivil = document.getElementById('unitMenuCivil');
+const unitMenuInfra = document.getElementById('unitMenuInfra');
 const closeMenuBtn = document.getElementById('closeMenu');
 const closeMenuCivilBtn = document.getElementById('closeMenuCivil');
+const closeMenuInfraBtn = document.getElementById('closeMenuInfra');
 const unitItems = document.querySelectorAll('.unit-item');
 
 // Éléments des outils
@@ -135,13 +138,22 @@ function closeAllMenus() {
 // Ouvrir/Fermer le menu burger militaire
 burgerBtnMilitaire.addEventListener('click', () => {
     unitMenuCivil.classList.add('hidden');
+    unitMenuInfra.classList.add('hidden');
     unitMenuMilitaire.classList.toggle('hidden');
 });
 
 // Ouvrir/Fermer le menu burger civil
 burgerBtnCivil.addEventListener('click', () => {
     unitMenuMilitaire.classList.add('hidden');
+    unitMenuInfra.classList.add('hidden');
     unitMenuCivil.classList.toggle('hidden');
+});
+
+// Ouvrir/Fermer le menu burger infrastructures
+burgerBtnInfra.addEventListener('click', () => {
+    unitMenuMilitaire.classList.add('hidden');
+    unitMenuCivil.classList.add('hidden');
+    unitMenuInfra.classList.toggle('hidden');
 });
 
 closeMenuBtn.addEventListener('click', () => {
@@ -150,6 +162,10 @@ closeMenuBtn.addEventListener('click', () => {
 
 closeMenuCivilBtn.addEventListener('click', () => {
     unitMenuCivil.classList.add('hidden');
+});
+
+closeMenuInfraBtn.addEventListener('click', () => {
+    unitMenuInfra.classList.add('hidden');
 });
 
 // Fermer le menu en cliquant en dehors
@@ -163,6 +179,11 @@ document.addEventListener('click', (e) => {
         !unitMenuCivil.contains(e.target) && 
         !burgerBtnCivil.contains(e.target)) {
         unitMenuCivil.classList.add('hidden');
+    }
+    if (!unitMenuInfra.classList.contains('hidden') && 
+        !unitMenuInfra.contains(e.target) && 
+        !burgerBtnInfra.contains(e.target)) {
+        unitMenuInfra.classList.add('hidden');
     }
 });
 
@@ -859,3 +880,83 @@ publishBtn.addEventListener('click', async function() {
         alert(`❌ Erreur lors de la publication:\n\n${error.message}`);
     }
 });
+
+// ===== SUPPRESSION DES SAUVEGARDES =====
+const deleteSavesBtn = document.getElementById('deleteSavesBtn');
+const deleteConfirmPopup = document.getElementById('deleteConfirmPopup');
+const deletePasswordInput = document.getElementById('deletePasswordInput');
+const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+
+const DELETE_PASSWORD = '240806';
+
+// Ouvrir la popup de confirmation
+deleteSavesBtn.addEventListener('click', () => {
+    deleteConfirmPopup.classList.remove('hidden');
+    deletePasswordInput.value = '';
+    deletePasswordInput.focus();
+});
+
+// Annuler la suppression
+cancelDeleteBtn.addEventListener('click', () => {
+    deleteConfirmPopup.classList.add('hidden');
+    deletePasswordInput.value = '';
+});
+
+// Fermer la popup avec Échap
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !deleteConfirmPopup.classList.contains('hidden')) {
+        deleteConfirmPopup.classList.add('hidden');
+        deletePasswordInput.value = '';
+    }
+});
+
+// Valider avec Entrée dans le champ de mot de passe
+deletePasswordInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        confirmDeleteBtn.click();
+    }
+});
+
+// Confirmer la suppression
+confirmDeleteBtn.addEventListener('click', () => {
+    const enteredPassword = deletePasswordInput.value;
+    
+    if (enteredPassword !== DELETE_PASSWORD) {
+        alert('❌ Code de sécurité incorrect !');
+        deletePasswordInput.value = '';
+        deletePasswordInput.focus();
+        return;
+    }
+    
+    // Supprimer toutes les sauvegardes
+    const keysToDelete = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('mapData')) {
+            keysToDelete.push(key);
+        }
+    }
+    
+    if (keysToDelete.length === 0) {
+        alert('ℹ️ Aucune sauvegarde à supprimer.');
+        deleteConfirmPopup.classList.add('hidden');
+        return;
+    }
+    
+    // Supprimer toutes les clés trouvées
+    keysToDelete.forEach(key => localStorage.removeItem(key));
+    
+    // Réinitialiser la carte
+    unitsLayer.clearLayers();
+    
+    // Fermer la popup
+    deleteConfirmPopup.classList.add('hidden');
+    deletePasswordInput.value = '';
+    
+    // Notification de succès
+    alert(`✅ ${keysToDelete.length} sauvegarde(s) supprimée(s) avec succès !\n\nLa carte a été réinitialisée.`);
+    
+    console.log('🗑️ Sauvegardes supprimées:', keysToDelete);
+});
+
