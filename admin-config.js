@@ -47,34 +47,8 @@ const ADMIN_CONFIG = {
         localStorage.setItem('connection_logs', JSON.stringify(logs));
     },
     
-    // Sauvegarder une version de la carte
-    saveMapVersion: function(mapData, userId, username) {
-        const versions = this.getMapVersions();
-        
-        // Si c'est la première sauvegarde et qu'il y a une carte publiée existante
-        if (versions.length === 0) {
-            const publishedMap = localStorage.getItem('published_map');
-            if (publishedMap) {
-                try {
-                    const oldMapData = JSON.parse(publishedMap);
-                    // Créer une version "avant" si elle n'existe pas déjà
-                    const oldVersion = {
-                        id: Date.now() - 1000, // ID légèrement antérieur
-                        mapData: oldMapData,
-                        savedBy: oldMapData.publishedBy || 'Système',
-                        userId: oldMapData.publishedById || 'system',
-                        timestamp: oldMapData.timestamp || new Date().toISOString(),
-                        isAutoSaved: true,
-                        note: 'Version précédente (sauvegarde automatique)'
-                    };
-                    versions.push(oldVersion);
-                } catch (error) {
-                    console.error('Erreur lors de la sauvegarde de l\'ancienne version:', error);
-                }
-            }
-        }
-        
-        // Ajouter la nouvelle version
+    // Sauvegarder une version de la carte (via API Vercel)
+    saveMapVersion: async function(mapData, userId, username) {
         const version = {
             id: Date.now(),
             mapData: mapData,
@@ -83,20 +57,89 @@ const ADMIN_CONFIG = {
             timestamp: new Date().toISOString(),
             isAutoSaved: false
         };
-        versions.push(version);
-        localStorage.setItem('map_versions', JSON.stringify(versions));
-        return version.id;
+
+        try {
+            const apiUrl = (typeof VERCEL_CONFIG !== 'undefined' && VERCEL_CONFIG.apiUrl) 
+                ? `${VERCEL_CONFIG.apiUrl}/api/save-version`
+                : 'https://kingdomofnile-definitive.vercel.app/api/save-version';
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'save',
+                    version: version
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                console.log('Version sauvegardée avec succès:', data);
+                return version.id;
+            } else {
+                throw new Error(data.error || 'Erreur lors de la sauvegarde');
+            }
+        } catch (error) {
+            console.error('Erreur lors de la sauvegarde de la version:', error);
+            throw error;
+        }
     },
     
-    // Récupérer toutes les versions
-    getMapVersions: function() {
-        const versions = localStorage.getItem('map_versions');
-        return versions ? JSON.parse(versions) : [];
+    // Récupérer toutes les versions (via API Vercel)
+    getMapVersions: async function() {
+        try {
+            const apiUrl = (typeof VERCEL_CONFIG !== 'undefined' && VERCEL_CONFIG.apiUrl) 
+                ? `${VERCEL_CONFIG.apiUrl}/api/load-versions`
+                : 'https://kingdomofnile-definitive.vercel.app/api/load-versions';
+
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            
+            return data.versions || [];
+        } catch (error) {
+            console.error('Erreur lors du chargement des versions:', error);
+            return [];
+        }
+    },
+    
+    // Supprimer une version (via API Vercel)
+    deleteMapVersion: async function(versionId) {
+        try {
+            const apiUrl = (typeof VERCEL_CONFIG !== 'undefined' && VERCEL_CONFIG.apiUrl) 
+                ? `${VERCEL_CONFIG.apiUrl}/api/save-version`
+                : 'https://kingdomofnile-definitive.vercel.app/api/save-version';
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'delete',
+                    versionId: versionId
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                console.log('Version supprimée avec succès:', data);
+                return true;
+            } else {
+                throw new Error(data.error || 'Erreur lors de la suppression');
+            }
+        } catch (error) {
+            console.error('Erreur lors de la suppression de la version:', error);
+            throw error;
+        }
     },
     
     // Restaurer une version
-    restoreMapVersion: function(versionId) {
-        const versions = this.getMapVersions();
+    restoreMapVersion: async function(versionId) {
+        const versions = await this.getMapVersions();
         const version = versions.find(v => v.id === versionId);
         return version ? version.mapData : null;
     }

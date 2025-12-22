@@ -818,8 +818,13 @@ publishBtn.addEventListener('click', async function() {
             }
         });
         
-        // Sauvegarde automatique désactivée - pas besoin de stocker localement
-        // const versionId = ADMIN_CONFIG.saveMapVersion(mapData, currentUser.id, currentUser.username);
+        // Sauvegarder la version actuelle avant de publier (via API Vercel)
+        try {
+            await ADMIN_CONFIG.saveMapVersion(mapData, currentUser.id, currentUser.username);
+            console.log('✅ Version sauvegardée dans le Gist');
+        } catch (error) {
+            console.error('❌ Erreur lors de la sauvegarde de la version:', error);
+        }
         
         // Publier via l'API Vercel
         try {

@@ -69,8 +69,8 @@ function loadLogs() {
 }
 
 // Charger et afficher les versions
-function loadVersions() {
-    const versions = ADMIN_CONFIG.getMapVersions();
+async function loadVersions() {
+    const versions = await ADMIN_CONFIG.getMapVersions();
     const container = document.getElementById('versionsContainer');
     
     if (versions.length === 0) {
@@ -282,7 +282,7 @@ function deleteSingleVersion(versionId) {
 window.deleteSingleVersion = deleteSingleVersion;
 
 // Bouton confirmer
-confirmDeleteBtn.addEventListener('click', () => {
+confirmDeleteBtn.addEventListener('click', async () => {
     const enteredPassword = deletePasswordInput.value;
     
     if (enteredPassword !== '240806') {
@@ -292,37 +292,29 @@ confirmDeleteBtn.addEventListener('click', () => {
         return;
     }
     
-    if (deleteAction === 'all') {
-        // Supprimer toutes les sauvegardes
-        const keys = Object.keys(localStorage);
-        const mapDataKeys = keys.filter(key => key.startsWith('mapData'));
-        
-        if (mapDataKeys.length === 0) {
-            alert('ℹ️ Aucune sauvegarde à supprimer');
-            deletePopup.classList.add('hidden');
-            return;
-        }
-        
-        mapDataKeys.forEach(key => localStorage.removeItem(key));
-        
-        alert(`✅ ${mapDataKeys.length} sauvegarde(s) supprimée(s) avec succès`);
-        ADMIN_CONFIG.logAction(currentUser.id, currentUser.username, 'delete_all_saves', { count: mapDataKeys.length });
-    } else {
-        // Supprimer une version spécifique
-        const key = `mapData_${deleteAction}`;
-        if (localStorage.getItem(key)) {
-            localStorage.removeItem(key);
-            alert(`✅ Version #${deleteAction} supprimée avec succès`);
-            ADMIN_CONFIG.logAction(currentUser.id, currentUser.username, 'delete_save', { versionId: deleteAction });
+    try {
+        if (deleteAction === 'all') {
+            // Supprimer toutes les versions via l'API
+            await ADMIN_CONFIG.deleteMapVersion('all');
+            
+            alert('✅ Toutes les versions ont été supprimées avec succès');
+            ADMIN_CONFIG.logAction(currentUser.id, currentUser.username, 'delete_all_versions');
         } else {
-            alert('❌ Version introuvable');
+            // Supprimer une version spécifique
+            await ADMIN_CONFIG.deleteMapVersion(deleteAction);
+            
+            alert(`✅ Version #${deleteAction} supprimée avec succès`);
+            ADMIN_CONFIG.logAction(currentUser.id, currentUser.username, 'delete_version', { versionId: deleteAction });
         }
+        
+        deletePopup.classList.add('hidden');
+        deletePasswordInput.value = '';
+        await loadVersions();
+        loadLogs();
+    } catch (error) {
+        alert('❌ Erreur lors de la suppression: ' + error.message);
+        console.error('Erreur:', error);
     }
-    
-    deletePopup.classList.add('hidden');
-    deletePasswordInput.value = '';
-    loadVersions();
-    loadLogs();
 });
 
 // Bouton annuler
